@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Storefront light-luxury palette */
+  --cream:        #FAF3EB;
+  --cream-card:   #FFFFFF;
+  --gold:         #D4A054;
+  --orange:       #E86A33;
+  --border-warm:  #E8DEC8;
+  --text-primary: #2C221E;
+  --text-muted:   #7A6E65;
+
+  /* Keep body dark — cream is scoped to (storefront)/layout.tsx */
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,15 +23,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ─── Admin Utilities ────────────────────────────────────────────────────── */
+.admin-scroll::-webkit-scrollbar        { width: 4px; }
+.admin-scroll::-webkit-scrollbar-track  { background: transparent; }
+.admin-scroll::-webkit-scrollbar-thumb  { background: #404040; border-radius: 2px; }
+
+select option {
+  background-color: #262626;
+  color: #ffffff;
 }
