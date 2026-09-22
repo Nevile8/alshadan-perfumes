@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { SearchBar } from './SearchBar'
+import { CartButton } from './CartButton'
 
 const NAV_LINKS = [
   { label: 'Perfume de Hombre', href: '/?gender=hombre' },
@@ -15,7 +16,7 @@ export async function Header() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <header className="bg-white border-b border-[#E8DEC8] sticky top-0 z-50">
+    <header className="bg-white border-b border-[#E8DEC8] sticky top-0 z-40">
       {/* Top row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
@@ -43,19 +44,8 @@ export async function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Cart */}
-            <Link
-              href="/cart"
-              className="relative p-2 text-[#7A6E65] hover:text-[#2C221E] transition-colors"
-              aria-label="Carrito"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-              {/* Badge placeholder — Phase 4 */}
-            </Link>
+            {/* Cart — client component for live badge */}
+            <CartButton />
 
             {/* Account */}
             {user ? (
@@ -63,7 +53,7 @@ export async function Header() {
                 href="/account"
                 className="text-xs font-medium tracking-wider uppercase text-[#2C221E]
                            border border-[#E8DEC8] px-3 py-1.5 rounded-full
-                           hover:border-[#D4A054] transition-colors"
+                           hover:border-[#D4A054] transition-colors hidden sm:inline-block"
               >
                 Mi Cuenta
               </Link>
@@ -72,7 +62,7 @@ export async function Header() {
                 href="/auth/login"
                 className="text-xs font-medium tracking-wider uppercase text-white
                            bg-[#E86A33] px-4 py-1.5 rounded-full
-                           hover:bg-[#d05a28] transition-colors"
+                           hover:bg-[#d05a28] transition-colors hidden sm:inline-block"
               >
                 Ingresar
               </Link>

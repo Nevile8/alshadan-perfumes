@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { signOutAction } from '@/app/admin/actions'
@@ -6,8 +6,9 @@ import { signOutAction } from '@/app/admin/actions'
 const navLinks = [
   { href: '/admin', label: 'Dashboard', icon: '▦' },
   { href: '/admin/products', label: 'Productos', icon: '◈' },
-  { href: '/admin/orders', label: 'Órdenes', icon: '◎' },
-  { href: '/admin/coupons', label: 'Cupones', icon: '◇' },
+  { href: '/admin/orders',   label: 'Órdenes',  icon: '◎' },
+  { href: '/admin/shipping', label: 'Envíos',   icon: '◫' },
+  { href: '/admin/coupons',  label: 'Cupones',  icon: '◇' },
 ]
 
 export default async function AdminLayout({

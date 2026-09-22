@@ -150,3 +150,20 @@ export type Database = {
     }
   }
 }
+
+export interface Commune {
+  id:           string   // CUT code e.g. '13101'
+  region_code:  string   // e.g. '13'
+  region_name:  string   // e.g. 'Metropolitana de Santiago'
+  commune_name: string   // e.g. 'Santiago'
+  base_price:   number   // CLP
+  is_active:    boolean
+  created_at:   string
+  updated_at:   string
+}
+
+export interface StoreSetting {
+  key:        string
+  value:      unknown   // JSON value — cast at call site
+  updated_at: string
+}
