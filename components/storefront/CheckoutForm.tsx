@@ -108,7 +108,11 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
         payment_method: paymentMethod,
         coupon_code:    appliedCoupon?.code ?? '',
       })
-      if (result?.error) setFormError(result.error)
+      if (result?.error) {
+        setFormError(result.error)
+      } else if (result?.redirectUrl) {
+        window.location.href = result.redirectUrl
+      }
     })
   }
 

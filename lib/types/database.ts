@@ -1,4 +1,4 @@
-﻿// ─── Enum Types ───────────────────────────────────────────────────────────────
+// ─── Enum Types ───────────────────────────────────────────────────────────────
 
 export type UserRole = 'customer' | 'admin'
 export type ProductGender = 'hombre' | 'mujer' | 'unisex'
@@ -53,6 +53,8 @@ export interface Order {
   shipping_address: ShippingAddress
   payment_provider: string | null   // 'mercadopago' | 'webpay'
   payment_reference: string | null  // external payment ID
+  tracking_number: string | null    // set when shipped
+  tracking_url: string | null       // carrier tracking link
   created_at: string
   updated_at: string
 }

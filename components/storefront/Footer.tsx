@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: 'Inicio',                  href: '/' },
   { label: 'Mi Cuenta',               href: '/account' },
   { label: 'Carrito',                 href: '/cart' },
+  { label: 'Rastrear Pedido',         href: '/track' },
   { label: 'Terminos y Condiciones',  href: '/terms' },
 ]
 

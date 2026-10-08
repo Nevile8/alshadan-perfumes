@@ -1,6 +1,6 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { calculateShipping } from '@/lib/utils'
@@ -202,7 +202,66 @@ export async function processCheckout(
   if (itemsError) return { error: `Error al crear items: ${itemsError.message}` }
 
   // ── 8. Payment gateway ────────────────────────────────────────────────────
-  // Phase 6 will integrate real Mercado Pago / Webpay SDK calls here.
-  // For now, redirect to a pending confirmation page.
-  redirect(`/checkout/pending?order=${order.id}`)
+  if (form.payment_method === 'mercadopago') {
+    const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN
+    if (!mpToken) return { error: 'Mercado Pago no está configurado.' }
+
+    const client = new MercadoPagoConfig({ accessToken: mpToken, options: { timeout: 10000 } })
+    const preference = new Preference(client)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let mpItems: any[] = orderItems.map((item) => ({
+      id: item.variant_id,
+      title: `${item.product_name} - ${item.size_ml}ml`,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      currency_id: 'CLP',
+    }))
+
+    // If there is a discount, MP strict math might fail if we don't apply it per item.
+    // Easiest robust approach for cart-level discounts is aggregating to a single item line:
+    if (discount > 0) {
+      mpItems = [{
+        id: `ORDER_${order.id.split('-')[0]}`,
+        title: `Orden ALSHADAN #${order.id.slice(0, 8).toUpperCase()}`,
+        quantity: 1,
+        unit_price: subtotal - discount,
+        currency_id: 'CLP',
+      }]
+    }
+
+    try {
+      const prefResult = await preference.create({
+        body: {
+          items: mpItems,
+          shipments: {
+            cost: shippingCost,
+            mode: 'not_specified',
+          },
+          external_reference: order.id,
+          back_urls: {
+            success: `${appUrl}/checkout/status`,
+            pending: `${appUrl}/checkout/status`,
+            failure: `${appUrl}/checkout/status`,
+          },
+          auto_return: 'approved',
+          payer: {
+            name: form.full_name,
+            email: form.email,
+          },
+        },
+      })
+
+      if (prefResult.init_point) {
+        return { error: null, redirectUrl: prefResult.init_point }
+      }
+    } catch (err) {
+      console.error('[MP Pref Error]', err)
+      return { error: 'Error al iniciar pago seguro con Mercado Pago.' }
+    }
+  }
+
+  // Fallback for Webpay (Phase 7) or if MP fails to return init_point
+  return { error: null, redirectUrl: `/checkout/pending?order=${order.id}` }
 }
