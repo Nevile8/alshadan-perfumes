@@ -1,6 +1,5 @@
 'use server'
 
-import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { calculateShipping } from '@/lib/utils'
@@ -206,8 +205,6 @@ export async function processCheckout(
     const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN
     if (!mpToken) return { error: 'Mercado Pago no está configurado.' }
 
-    const client = new MercadoPagoConfig({ accessToken: mpToken, options: { timeout: 10000 } })
-    const preference = new Preference(client)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -232,33 +229,52 @@ export async function processCheckout(
     }
 
     try {
-      const prefResult = await preference.create({
-        body: {
-          items: mpItems,
-          shipments: {
-            cost: shippingCost,
-            mode: 'not_specified',
-          },
-          external_reference: order.id,
-          back_urls: {
-            success: `${appUrl}/checkout/status`,
-            pending: `${appUrl}/checkout/status`,
-            failure: `${appUrl}/checkout/status`,
-          },
-          auto_return: 'approved',
-          payer: {
-            name: form.full_name,
-            email: form.email,
-          },
+      const isLocalhost = appUrl.includes('localhost') || appUrl.includes('127.0.0.1')
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        items: mpItems,
+        external_reference: order.id,
+        back_urls: {
+          success: `${appUrl}/checkout/status`,
+          pending: `${appUrl}/checkout/status`,
+          failure: `${appUrl}/checkout/status`,
         },
+        payer: {
+          name: form.full_name,
+          email: form.email,
+        },
+      }
+
+      // auto_return requires a publicly accessible URL — disabled on localhost
+      if (!isLocalhost) {
+        payload.auto_return = 'approved'
+        payload.shipments   = { cost: shippingCost, mode: 'not_specified' }
+      }
+
+      const res = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${mpToken}`
+        },
+        body: JSON.stringify(payload)
       })
+
+      if (!res.ok) {
+        const errText = await res.text()
+        console.error('[MP Fetch Error]', errText)
+        return { error: `Error Mercado Pago: ${errText}. Verifica tu Access Token o payload.` }
+      }
+
+      const prefResult = await res.json()
 
       if (prefResult.init_point) {
         return { error: null, redirectUrl: prefResult.init_point }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[MP Pref Error]', err)
-      return { error: 'Error al iniciar pago seguro con Mercado Pago.' }
+      return { error: `Error Mercado Pago: ${err.message || 'Token inválido o error de conexión'}. Verifica tu Access Token en .env.local` }
     }
   }
 
