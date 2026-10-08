@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { formatPrice } from '@/lib/utils'
 import { OrderFulfillmentForm } from '@/components/admin/OrderFulfillmentForm'
+import { MPPaymentCard } from '@/components/admin/MPPaymentCard'
+import { getMPPayment } from '@/lib/mercadopago'
 import type { Order, OrderItem, ShippingAddress } from '@/lib/types/database'
 
 type PageProps = { params: Promise<{ id: string }> }
@@ -30,6 +32,9 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
   const order = data as Order & { order_items: OrderItem[] }
   const addr  = order.shipping_address as ShippingAddress
+  const payment = order.payment_provider === 'mercadopago' && order.payment_reference
+    ? await getMPPayment(order.payment_reference)
+    : null
 
   return (
     <div>
@@ -52,9 +57,17 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             })}
           </p>
         </div>
-        <span className="text-xs px-3 py-1.5 rounded-full border bg-neutral-800 text-neutral-300 border-neutral-700">
-          {STATUS_LABELS[order.status] ?? order.status}
-        </span>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/admin/orders/${order.id}/receipt`}
+            className="text-xs px-3 py-1.5 rounded border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500 transition-colors"
+          >
+            Ver comprobante
+          </Link>
+          <span className="text-xs px-3 py-1.5 rounded-full border bg-neutral-800 text-neutral-300 border-neutral-700">
+            {STATUS_LABELS[order.status] ?? order.status}
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -170,6 +183,22 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               </p>
             )}
           </div>
+
+          {/* Mercado Pago payment */}
+          {order.payment_reference && (
+            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">
+              <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-4">
+                Pago en Mercado Pago
+              </h3>
+              {payment ? (
+                <MPPaymentCard payment={payment} />
+              ) : (
+                <p className="text-xs text-neutral-500">
+                  No se pudo obtener el pago #{order.payment_reference} desde Mercado Pago.
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Fulfillment */}
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">

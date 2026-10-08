@@ -32,9 +32,9 @@ export default async function AdminLayout({
   if ((profileData as { role: string } | null)?.role !== 'admin') redirect('/')
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex">
+    <div className="min-h-screen bg-neutral-950 flex print:bg-white print:block">
       {/* Sidebar */}
-      <aside className="w-60 bg-neutral-900 border-r border-neutral-800 flex flex-col fixed inset-y-0 left-0 z-10">
+      <aside className="print:hidden w-60 bg-neutral-900 border-r border-neutral-800 flex flex-col fixed inset-y-0 left-0 z-10">
         {/* Brand */}
         <div className="px-6 py-6 border-b border-neutral-800">
           <p className="text-[10px] tracking-[0.3em] text-neutral-500 uppercase">Admin</p>
@@ -74,8 +74,8 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main */}
-      <div className="flex-1 ml-60 flex flex-col min-h-screen">
-        <main className="flex-1 p-8">{children}</main>
+      <div className="flex-1 ml-60 flex flex-col min-h-screen print:ml-0 print:min-h-0">
+        <main className="flex-1 p-8 print:p-0">{children}</main>
       </div>
     </div>
   )
