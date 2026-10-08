@@ -110,7 +110,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (payment.status === 'approved') {
-      const paid = Number(payment.transaction_amount)
+      // transaction_amount covers only the items; shipping (preference "shipments")
+      // is charged on top as shipping_amount. total_paid_amount includes both.
+      const paid = Number(
+        payment.transaction_details?.total_paid_amount ??
+        Number(payment.transaction_amount ?? 0) + Number(payment.shipping_amount ?? 0)
+      )
       if (payment.currency_id !== 'CLP' || paid < Number(order.total)) {
         console.error('[MP Webhook] Amount mismatch — order left pending for manual review', {
           orderId, paymentId, paid, currency: payment.currency_id, expected: order.total,
