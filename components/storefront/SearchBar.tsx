@@ -1,14 +1,16 @@
 'use client'
 
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 export function SearchBar() {
   const searchParams = useSearchParams()
   const pathname     = usePathname()
   const { replace }  = useRouter()
 
-  const [value, setValue] = useState(searchParams.get('q') ?? '')
+  const urlQuery = searchParams.get('q') ?? ''
+  const [value, setValue] = useState(urlQuery)
+  const [syncedQuery, setSyncedQuery] = useState(urlQuery)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const updateURL = useCallback(
@@ -36,10 +38,12 @@ export function SearchBar() {
     updateURL('')
   }
 
-  // Sync if URL q param changes externally (e.g. FilterBar clearing)
-  useEffect(() => {
-    setValue(searchParams.get('q') ?? '')
-  }, [searchParams])
+  // Sync if URL q param changes externally (e.g. FilterBar clearing).
+  // Adjusting state during render avoids an extra effect pass.
+  if (urlQuery !== syncedQuery) {
+    setSyncedQuery(urlQuery)
+    setValue(urlQuery)
+  }
 
   return (
     <div className="relative flex items-center w-full max-w-md">

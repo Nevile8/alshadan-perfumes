@@ -31,16 +31,19 @@ export async function lookupOrder(
     .eq('id', trimId)
     .single()
 
+  // Same message for "not found" and "wrong email" so order IDs can't be probed
+  const notFound = 'No encontramos una orden con ese número y correo.'
+
   if (error || !data) {
-    return { order: null, error: 'No encontramos una orden con ese número.' }
+    return { order: null, error: notFound }
   }
 
   const order = data as Order & { order_items: OrderItem[] }
   const addr  = order.shipping_address as ShippingAddress
 
   // Security check — email must match the billing email
-  if (addr.email.toLowerCase() !== trimEmail) {
-    return { order: null, error: 'El correo no coincide con el registrado para esta orden.' }
+  if (addr?.email?.toLowerCase() !== trimEmail) {
+    return { order: null, error: notFound }
   }
 
   return { order, error: null }

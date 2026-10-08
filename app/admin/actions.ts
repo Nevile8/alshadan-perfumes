@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/require-admin'
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -18,6 +19,7 @@ export async function signOutAction() {
 export async function uploadProductImage(
   formData: FormData
 ): Promise<{ url: string | null; error: string | null }> {
+  await requireAdmin()
   const supabase = createAdminClient()
   const file = formData.get('file') as File | null
 
@@ -43,6 +45,7 @@ export async function uploadProductImage(
 }
 
 export async function deleteProductImage(path: string): Promise<void> {
+  await requireAdmin()
   const supabase = createAdminClient()
   const filePath = path.split('/storage/v1/object/public/Perfume/')[1]
   if (filePath) {
@@ -89,6 +92,7 @@ export interface ProductInput {
 export async function createProduct(
   data: ProductInput
 ): Promise<{ error: string | null }> {
+  await requireAdmin()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
 
@@ -133,6 +137,7 @@ export async function updateProduct(
   data: ProductInput,
   deletedVariantIds: string[]
 ): Promise<{ error: string | null }> {
+  await requireAdmin()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
 
@@ -187,6 +192,7 @@ export async function updateProduct(
 export async function deleteProduct(
   productId: string
 ): Promise<{ error: string | null }> {
+  await requireAdmin()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
   const { error } = await supabase.from('products').delete().eq('id', productId)
