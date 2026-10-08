@@ -43,7 +43,7 @@ export interface ProductVariant {
 
 export interface Order {
   id: string
-  user_id: string             // FK → auth.users.id
+  user_id: string | null      // FK → auth.users.id (null for guest checkout)
   status: OrderStatus
   subtotal: number
   discount: number

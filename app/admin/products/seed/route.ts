@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/require-admin'
 
 const TEST_PRODUCTS = [
   {
@@ -89,6 +90,12 @@ const TEST_PRODUCTS = [
 ]
 
 export async function GET() {
+  try {
+    await requireAdmin()
+  } catch {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
 

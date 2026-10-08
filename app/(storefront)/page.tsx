@@ -60,8 +60,10 @@ export default async function CatalogPage({ searchParams }: PageParams) {
     query = query.eq('gender', gender)
   }
 
-  if (q && q.trim().length > 0) {
-    query = query.or(`name.ilike.%${q.trim()}%,brand.ilike.%${q.trim()}%,description.ilike.%${q.trim()}%`)
+  // Strip characters that have meaning in PostgREST filter syntax
+  const term = (q ?? '').replace(/[,()%*\\]/g, ' ').trim()
+  if (term.length > 0) {
+    query = query.or(`name.ilike.%${term}%,brand.ilike.%${term}%,description.ilike.%${term}%`)
   }
 
   const { data } = await query

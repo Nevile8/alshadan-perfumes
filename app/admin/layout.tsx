@@ -23,6 +23,14 @@ export default async function AdminLayout({
 
   if (!user) redirect('/auth/login')
 
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if ((profileData as { role: string } | null)?.role !== 'admin') redirect('/')
+
   return (
     <div className="min-h-screen bg-neutral-950 flex">
       {/* Sidebar */}

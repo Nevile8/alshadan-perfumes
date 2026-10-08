@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import type { OrderStatus } from '@/lib/types/database'
 
 export async function updateOrderFulfillment(
@@ -10,6 +11,7 @@ export async function updateOrderFulfillment(
   trackingNumber: string | null,
   trackingUrl: string | null
 ): Promise<{ error: string | null }> {
+  await requireAdmin()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
 

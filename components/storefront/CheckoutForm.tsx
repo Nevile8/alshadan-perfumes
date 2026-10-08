@@ -220,7 +220,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
               Método de Pago
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {(['mercadopago', 'webpay'] as const).map((method) => (
+              {/* Webpay is not integrated yet — add 'webpay' back here once it is */}
+              {(['mercadopago'] as const).map((method) => (
                 <button
                   key={method}
                   type="button"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { useCartStore } from '@/lib/store/cart'
 
 /**
@@ -8,11 +8,12 @@ import { useCartStore } from '@/lib/store/cart'
  * Extracted so the parent Header stays a Server Component.
  * Uses 'mounted' pattern to avoid SSR hydration mismatch from localStorage.
  */
+const subscribeNoop = () => () => {}
+
 export function CartButton() {
   const { openDrawer, getTotalItems } = useCartStore()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
+  // false during SSR/hydration, true on the client afterwards
+  const mounted = useSyncExternalStore(subscribeNoop, () => true, () => false)
 
   const count = mounted ? getTotalItems() : 0
 

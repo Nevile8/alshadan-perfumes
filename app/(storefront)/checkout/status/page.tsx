@@ -14,7 +14,6 @@ export default async function CheckoutStatusPage({ searchParams }: Props) {
 
   const isSuccess = status === 'approved'
   const isPending = status === 'in_process' || status === 'pending'
-  const isFailure = status === 'rejected' || status === 'null' || !status
 
   let title = 'Pago no completado'
   let message = 'Hubo un problema procesando tu pago o fue cancelado.'
