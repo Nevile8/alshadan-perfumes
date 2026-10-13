@@ -40,6 +40,25 @@ export async function updateCommunePrice(
   return { error: null }
 }
 
+/** Sets the same base price for every commune in a region. */
+export async function updateRegionPrice(
+  regionCode: string,
+  basePrice: number
+): Promise<{ error: string | null; updated: number }> {
+  await requireAdmin()
+  if (!Number.isInteger(basePrice) || basePrice < 0) return { error: 'El precio debe ser un número entero, 0 o mayor.', updated: 0 }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = createAdminClient() as any
+  const { data, error } = await supabase
+    .from('communes')
+    .update({ base_price: basePrice })
+    .eq('region_code', regionCode)
+    .select('id')
+  if (error) return { error: error.message, updated: 0 }
+  revalidatePath('/admin/shipping')
+  return { error: null, updated: (data ?? []).length }
+}
+
 export async function toggleCommuneActive(
   id: string,
   isActive: boolean

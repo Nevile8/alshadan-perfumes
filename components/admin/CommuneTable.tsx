@@ -103,7 +103,7 @@ function CommuneRow({ commune }: { commune: Commune }) {
         <div className="flex items-center justify-end gap-3">
           {!editing && (
             <button
-              onClick={() => setEditing(true)}
+              onClick={() => { setPrice(String(commune.base_price)); setEditing(true) }}
               className="text-xs text-neutral-400 hover:text-white transition-colors"
             >
               Editar precio
