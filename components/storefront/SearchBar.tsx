@@ -2,6 +2,7 @@
 
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
+import { LIMITS } from '@/lib/limits'
 
 export function SearchBar() {
   const searchParams = useSearchParams()
@@ -62,6 +63,7 @@ export function SearchBar() {
         value={value}
         onChange={handleChange}
         placeholder="Buscar perfumes..."
+        maxLength={LIMITS.search}
         className="w-full pl-9 pr-8 py-2 text-sm bg-white/10 border border-white/20 rounded-full
                    text-ivory placeholder-ivory/55 focus:outline-none focus:border-gold
                    transition-colors"

@@ -1,6 +1,7 @@
 'use server'
 
 import { sendContactMessage } from '@/lib/email'
+import { LIMITS } from '@/lib/limits'
 
 export type ContactFormState = { success: boolean; error: string | null } | null
 
@@ -14,9 +15,10 @@ export async function submitContactForm(
   // Honeypot: hidden field real visitors never fill in
   if (formData.get('website')) return { success: true, error: null }
 
-  const name    = formData.get('name')?.toString().trim().slice(0, 100)
-  const email   = formData.get('email')?.toString().trim().slice(0, 254)
-  const message = formData.get('message')?.toString().trim().slice(0, 5000)
+  // Line breaks are stripped from single-line fields (the name ends up in the email subject)
+  const name    = formData.get('name')?.toString().replace(/[\r\n]+/g, ' ').trim().slice(0, LIMITS.name)
+  const email   = formData.get('email')?.toString().trim().slice(0, LIMITS.email)
+  const message = formData.get('message')?.toString().trim().slice(0, LIMITS.message)
 
   if (!name || !email || !message) {
     return { success: false, error: 'Todos los campos son obligatorios.' }

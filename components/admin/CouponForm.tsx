@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createCoupon, updateCoupon, type CouponFormState } from '@/app/admin/coupons/actions'
 import { toChileDateInput } from '@/lib/coupons'
 import type { Coupon } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 const inputClass =
   'w-full bg-neutral-800 border border-neutral-700 rounded px-4 py-3 text-white text-sm placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors'
@@ -31,7 +32,7 @@ export function CouponForm({ coupon }: { coupon?: Coupon }) {
         <div className="flex gap-2">
           <input
             id="code" name="code" required value={code} onChange={(e) => setCode(e.target.value)} readOnly={codeLocked}
-            placeholder="VERANO10" maxLength={30}
+            placeholder="VERANO10" maxLength={LIMITS.couponCode}
             className={`${inputClass} font-mono uppercase ${codeLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
           />
           {!codeLocked && (

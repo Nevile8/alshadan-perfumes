@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { calculateShipping } from '@/lib/utils'
 import type { CartItem } from '@/lib/store/cart'
 import type { Commune, Coupon, StoreSetting } from '@/lib/types/database'
+import { LIMITS, UUID_RE, cleanString } from '@/lib/limits'
 
 // ─── Fetch shipping data for checkout page ────────────────────────────────────
 
@@ -39,7 +40,7 @@ export async function validateCoupon(
   subtotal: number
 ): Promise<{ coupon: Coupon | null; error: string | null }> {
   const trimmed = typeof code === 'string' ? code.trim() : ''
-  if (!trimmed || trimmed.length > 50) return { coupon: null, error: 'Cupón no encontrado o inactivo.' }
+  if (!trimmed || trimmed.length > LIMITS.couponCode) return { coupon: null, error: 'Cupón no encontrado o inactivo.' }
 
   // Coupons are not publicly readable (RLS), so look them up server-side.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,31 +84,34 @@ export interface CheckoutFormData {
 
 const MAX_QUANTITY_PER_ITEM = 20
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const RUT_RE   = /^[0-9.]{1,12}-?[0-9kK]$/
+const PHONE_RE = /^[0-9+()\s-]{6,30}$/
+const MAX_CART_LINES = 50
 
-function str(value: unknown, max: number): string | null {
-  if (typeof value !== 'string') return null
-  const trimmed = value.trim()
-  return trimmed.length <= max ? trimmed : null
-}
+const str = cleanString
 
 /** Server Actions are public endpoints: never trust the shape of the input. */
 function validateForm(form: CheckoutFormData): { data: CheckoutFormData | null; error: string | null } {
   if (!form || typeof form !== 'object') return { data: null, error: 'Datos inválidos.' }
 
   const data = {
-    full_name:      str(form.full_name, 120),
-    rut:            str(form.rut, 20),
-    email:          str(form.email, 254)?.toLowerCase() ?? null,
-    phone:          str(form.phone, 30),
+    full_name:      str(form.full_name, LIMITS.name),
+    rut:            str(form.rut, LIMITS.rut),
+    email:          str(form.email, LIMITS.email)?.toLowerCase() ?? null,
+    phone:          str(form.phone, LIMITS.phone),
     commune_id:     str(form.commune_id, 10),
-    address:        str(form.address, 200),
-    extra_info:     str(form.extra_info ?? '', 300),
+    address:        str(form.address, LIMITS.address),
+    extra_info:     str(form.extra_info ?? '', LIMITS.extraInfo),
     payment_method: form.payment_method,
-    coupon_code:    str(form.coupon_code ?? '', 50),
+    coupon_code:    str(form.coupon_code ?? '', LIMITS.couponCode),
   }
 
   if (!data.full_name || !data.rut || !data.phone || !data.commune_id || !data.address)
-    return { data: null, error: 'Completa todos los campos obligatorios.' }
+    return { data: null, error: 'Completa todos los campos obligatorios (revisa que no sean demasiado largos).' }
+  if (!RUT_RE.test(data.rut))
+    return { data: null, error: 'Ingresa un RUT válido.' }
+  if (!PHONE_RE.test(data.phone))
+    return { data: null, error: 'Ingresa un teléfono válido.' }
   if (!data.email || !EMAIL_RE.test(data.email))
     return { data: null, error: 'Ingresa un correo válido.' }
   if (data.extra_info === null || data.coupon_code === null)
@@ -121,11 +125,12 @@ function validateForm(form: CheckoutFormData): { data: CheckoutFormData | null; 
 /** Merge duplicate lines and keep only whole quantities between 1 and the max. */
 function normalizeCart(cartItems: CartItem[]): { lines: { variantId: string; quantity: number }[] | null; error: string | null } {
   if (!Array.isArray(cartItems) || cartItems.length === 0) return { lines: null, error: 'El carrito está vacío.' }
+  if (cartItems.length > MAX_CART_LINES) return { lines: null, error: 'Carrito inválido.' }
 
   const quantities = new Map<string, number>()
   for (const item of cartItems) {
     const qty = item?.quantity
-    if (typeof item?.variantId !== 'string' || !Number.isInteger(qty) || qty < 1)
+    if (typeof item?.variantId !== 'string' || !UUID_RE.test(item.variantId) || !Number.isInteger(qty) || qty < 1)
       return { lines: null, error: 'Carrito inválido.' }
     quantities.set(item.variantId, (quantities.get(item.variantId) ?? 0) + qty)
   }

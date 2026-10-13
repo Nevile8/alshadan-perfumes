@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { FilterBar } from '@/components/storefront/FilterBar'
 import { ProductCard } from '@/components/storefront/ProductCard'
 import type { Product, ProductVariant } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 type ProductWithVariants = Product & { product_variants: ProductVariant[] }
 
@@ -61,7 +62,7 @@ export default async function CatalogPage({ searchParams }: PageParams) {
   }
 
   // Strip characters that have meaning in PostgREST filter syntax
-  const term = (q ?? '').replace(/[,()%*\\]/g, ' ').trim()
+  const term = (typeof q === 'string' ? q.slice(0, LIMITS.search) : '').replace(/[,()%*\\]/g, ' ').trim()
   if (term.length > 0) {
     query = query.or(`name.ilike.%${term}%,brand.ilike.%${term}%,description.ilike.%${term}%`)
   }

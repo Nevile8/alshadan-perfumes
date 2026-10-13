@@ -272,7 +272,7 @@ export async function sendContactMessage(name: string, email: string, message: s
 
   return sendEmail({
     to:      adminEmail(),
-    subject: `Mensaje de ${name.slice(0, 60)} · alshadan.com`,
+    subject: `Mensaje de ${name.replace(/[\r\n]+/g, ' ').slice(0, 60)} · alshadan.com`,
     html,
     replyTo: email,
   })

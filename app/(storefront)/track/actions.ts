@@ -2,6 +2,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Order, OrderItem, ShippingAddress } from '@/lib/types/database'
+import { LIMITS, cleanString } from '@/lib/limits'
 
 export type OrderLookupResult = {
   order: Order & { order_items: OrderItem[] }
@@ -22,8 +23,8 @@ export async function lookupOrder(
   orderId: string,
   email: string
 ): Promise<OrderLookupResult> {
-  const code      = orderId.trim().replace(/^#/, '').toLowerCase()
-  const trimEmail = email.trim().toLowerCase()
+  const code      = (cleanString(orderId, LIMITS.orderCode) ?? '').replace(/^#/, '').toLowerCase()
+  const trimEmail = (cleanString(email, LIMITS.email) ?? '').toLowerCase()
 
   if (!code || !trimEmail) {
     return { order: null, error: 'Completa ambos campos.' }

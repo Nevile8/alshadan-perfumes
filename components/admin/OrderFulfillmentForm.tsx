@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateOrderFulfillment } from '@/app/admin/orders/actions'
 import type { OrderStatus } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: 'pending',   label: 'Pendiente' },
@@ -83,6 +84,7 @@ export function OrderFulfillmentForm({
               value={trackNum}
               onChange={(e) => setTrackNum(e.target.value)}
               placeholder="Ej: 123456789"
+              maxLength={LIMITS.trackingNumber}
               className={inputClass}
             />
           </div>
@@ -95,6 +97,7 @@ export function OrderFulfillmentForm({
               value={trackUrl}
               onChange={(e) => setTrackUrl(e.target.value)}
               placeholder="https://starken.cl/rastreo?codigo=..."
+              maxLength={LIMITS.trackingUrl}
               className={inputClass}
             />
             {trackUrl && (

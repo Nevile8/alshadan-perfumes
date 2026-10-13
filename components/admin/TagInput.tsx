@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useState, useRef, KeyboardEvent } from 'react'
+import { LIMITS } from '@/lib/limits'
 
 interface TagInputProps {
   value: string[]
@@ -13,8 +14,8 @@ export function TagInput({ value, onChange, placeholder = 'Escribe y presiona En
   const inputRef = useRef<HTMLInputElement>(null)
 
   function addTag(raw: string) {
-    const tag = raw.trim()
-    if (tag && !value.includes(tag)) {
+    const tag = raw.trim().slice(0, LIMITS.noteLength)
+    if (tag && !value.includes(tag) && value.length < LIMITS.notesCount) {
       onChange([...value, tag])
     }
     setInputValue('')
@@ -59,6 +60,7 @@ export function TagInput({ value, onChange, placeholder = 'Escribe y presiona En
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
+        maxLength={LIMITS.noteLength}
         onBlur={() => { if (inputValue.trim()) addTag(inputValue) }}
         placeholder={value.length === 0 ? placeholder : ''}
         className="flex-1 min-w-[120px] bg-transparent text-white text-sm outline-none placeholder-neutral-600"

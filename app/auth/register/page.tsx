@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { LIMITS } from '@/lib/limits'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -22,8 +23,8 @@ export default function RegisterPage() {
       setError('Las contraseñas no coinciden.')
       return
     }
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
+    if (password.length < LIMITS.passwordMin || password.length > LIMITS.passwordMax) {
+      setError(`La contraseña debe tener entre ${LIMITS.passwordMin} y ${LIMITS.passwordMax} caracteres.`)
       return
     }
 
@@ -34,7 +35,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName.trim().slice(0, LIMITS.name) },
         // Callback URL for email confirmation (Phase 1 skips this since we disabled email confirmation)
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -76,6 +77,7 @@ export default function RegisterPage() {
             onChange={(e) => setFullName(e.target.value)}
             required
             autoComplete="name"
+            maxLength={LIMITS.name}
             className="w-full bg-neutral-800 border border-neutral-700 rounded px-4 py-3 text-white text-sm placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors"
             placeholder="Tu Nombre"
           />
@@ -92,6 +94,7 @@ export default function RegisterPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
+            maxLength={LIMITS.email}
             className="w-full bg-neutral-800 border border-neutral-700 rounded px-4 py-3 text-white text-sm placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors"
             placeholder="tu@correo.com"
           />
@@ -108,6 +111,8 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="new-password"
+            minLength={LIMITS.passwordMin}
+            maxLength={LIMITS.passwordMax}
             className="w-full bg-neutral-800 border border-neutral-700 rounded px-4 py-3 text-white text-sm placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors"
             placeholder="Mínimo 8 caracteres"
           />
@@ -124,6 +129,7 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
+            maxLength={LIMITS.passwordMax}
             className="w-full bg-neutral-800 border border-neutral-700 rounded px-4 py-3 text-white text-sm placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-colors"
             placeholder="••••••••"
           />

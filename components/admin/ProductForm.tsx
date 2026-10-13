@@ -6,6 +6,7 @@ import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 import { createProduct, updateProduct } from '@/app/admin/actions'
 import type { Product, ProductVariant, ProductGender } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 interface VariantRow {
   id?: string
@@ -73,6 +74,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
   }
 
   function addVariant() {
+    if (variantRows.length >= LIMITS.variantsCount) return
     setVariantRows((rows) => [...rows, { size_ml: '', price: '', stock: '', sku: '' }])
   }
 
@@ -148,6 +150,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
               onChange={(e) => handleNameChange(e.target.value)}
               required
               placeholder="Royal Oud"
+              maxLength={LIMITS.productName}
               className={inputClass}
             />
           </div>
@@ -159,6 +162,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
               onChange={(e) => setBrand(e.target.value)}
               required
               placeholder="Alshadan"
+              maxLength={LIMITS.brand}
               className={inputClass}
             />
           </div>
@@ -172,6 +176,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
               value={slug}
               onChange={(e) => { setSlug(e.target.value); setSlugManual(true) }}
               placeholder="royal-oud"
+              maxLength={LIMITS.slug}
               className={inputClass}
             />
             <p className="text-neutral-600 text-xs mt-1">Auto-generado desde el nombre</p>
@@ -199,6 +204,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="Describe el perfume..."
+            maxLength={LIMITS.description}
             className={`${inputClass} resize-none`}
           />
         </div>
@@ -268,6 +274,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 onChange={(e) => updateVariant(i, 'size_ml', e.target.value)}
                 placeholder="100"
                 min="1"
+                max="10000"
                 className={`col-span-3 ${inputClass} py-2`}
               />
               <input
@@ -276,6 +283,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 onChange={(e) => updateVariant(i, 'price', e.target.value)}
                 placeholder="79900"
                 min="0"
+                max="100000000"
                 step="100"
                 className={`col-span-3 ${inputClass} py-2`}
               />
@@ -285,6 +293,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 onChange={(e) => updateVariant(i, 'stock', e.target.value)}
                 placeholder="0"
                 min="0"
+                max="100000"
                 className={`col-span-2 ${inputClass} py-2`}
               />
               <input
@@ -292,6 +301,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 value={row.sku}
                 onChange={(e) => updateVariant(i, 'sku', e.target.value)}
                 placeholder="RO-100"
+                maxLength={LIMITS.sku}
                 className={`col-span-3 ${inputClass} py-2`}
               />
               <button
