@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { lookupOrder } from '@/app/(storefront)/track/actions'
 import { formatPrice } from '@/lib/utils'
 import type { Order, OrderItem, ShippingAddress } from '@/lib/types/database'
@@ -19,8 +20,10 @@ const inputClass = `w-full px-4 py-3 text-sm bg-white border border-[#E8DEC8] ro
                     transition-colors`
 
 export function TrackOrderClient() {
-  const [orderId, setOrderId] = useState('')
-  const [email,   setEmail]   = useState('')
+  // Links in order emails carry ?order=<id>&email=<email>
+  const searchParams = useSearchParams()
+  const [orderId, setOrderId] = useState(searchParams.get('order') ?? '')
+  const [email,   setEmail]   = useState(searchParams.get('email') ?? '')
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
   const [order,   setOrder]   = useState<(Order & { order_items: OrderItem[] }) | null>(null)

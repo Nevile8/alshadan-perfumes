@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendOrderPaidEmails, sendPaymentReversedAlert } from '@/lib/email'
 
 /**
  * Mercado Pago Webhook Handler
@@ -12,6 +13,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
  * Required env variables:
  *   MERCADOPAGO_ACCESS_TOKEN=APP_USR-...
  *   MERCADOPAGO_WEBHOOK_SECRET=...   (Tus integraciones > Webhooks > Clave secreta)
+ *   RESEND_API_KEY=re_...            (order confirmation / owner alert emails, see lib/email.ts)
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,11 +126,22 @@ export async function POST(req: NextRequest) {
       }
 
       // Atomic: pending → paid, decrement stock, count coupon use (migration 004)
-      const { error } = await supabase.rpc('mark_order_paid', {
+      const { data: markedPaid, error } = await supabase.rpc('mark_order_paid', {
         p_order_id:          orderId,
         p_payment_reference: String(paymentId),
       })
       if (error) throw error
+
+      // Only the notification that actually moved the order to paid sends emails,
+      // so MP retries never send duplicates.
+      if (markedPaid === true) {
+        const { data: paidOrder } = await supabase
+          .from('orders')
+          .select('*, order_items(*)')
+          .eq('id', orderId)
+          .maybeSingle()
+        if (paidOrder) await sendOrderPaidEmails(paidOrder)
+      }
     } else if (payment.status === 'rejected' || payment.status === 'cancelled') {
       // A rejected card attempt doesn't end the checkout: the buyer can retry with
       // another card on the same preference. Only cancel orders still pending
@@ -144,6 +157,7 @@ export async function POST(req: NextRequest) {
     } else if (payment.status === 'refunded' || payment.status === 'charged_back') {
       // Needs a human decision (restock? already shipped?) — surface it in the logs
       console.warn(`[MP Webhook] Payment ${payment.status} for order ${orderId} (payment ${paymentId})`)
+      await sendPaymentReversedAlert(orderId, String(paymentId), payment.status)
     }
 
     return NextResponse.json({ received: true })
