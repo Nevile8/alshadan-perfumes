@@ -75,12 +75,12 @@ export default async function CatalogPage({ searchParams }: PageParams) {
   return (
     <>
       {/* Hero */}
-      <section className="bg-gradient-to-b from-[#F5E9D8] to-[#FAF3EB] py-12 px-4 text-center">
-        <p className="text-xs tracking-[0.4em] text-[#D4A054] uppercase mb-3">Coleccion Exclusiva</p>
-        <h1 className="text-4xl sm:text-5xl font-light text-[#2C221E] tracking-wide mb-4">
+      <section className="py-12 px-4 text-center">
+        <p className="text-xs tracking-[0.4em] text-gold uppercase mb-3">Coleccion Exclusiva</p>
+        <h1 className="text-4xl sm:text-5xl font-light text-ivory tracking-wide mb-4">
           Descubre tu Fragancia
         </h1>
-        <p className="text-[#7A6E65] text-sm max-w-md mx-auto leading-relaxed">
+        <p className="text-smoke text-sm max-w-md mx-auto leading-relaxed">
           Perfumes de lujo para hombre, mujer y unisex. Aromas que cuentan tu historia.
         </p>
       </section>
@@ -94,13 +94,13 @@ export default async function CatalogPage({ searchParams }: PageParams) {
 
         {/* Active search indicator */}
         {q && (
-          <div className="flex items-center gap-2 mb-6 text-sm text-[#7A6E65]">
+          <div className="flex items-center gap-2 mb-6 text-sm text-smoke">
             <span>Resultados para</span>
-            <span className="font-medium text-[#2C221E]">&ldquo;{q}&rdquo;</span>
-            <span className="text-[#7A6E65]">— {products.length} producto{products.length !== 1 ? 's' : ''}</span>
+            <span className="font-medium text-ivory">&ldquo;{q}&rdquo;</span>
+            <span className="text-smoke">— {products.length} producto{products.length !== 1 ? 's' : ''}</span>
             <Link
               href={gender ? `/?gender=${gender}` : '/'}
-              className="ml-2 text-xs text-[#E86A33] hover:underline"
+              className="ml-2 text-xs text-gold hover:underline"
             >
               Limpiar busqueda
             </Link>
@@ -117,14 +117,14 @@ export default async function CatalogPage({ searchParams }: PageParams) {
         ) : (
           /* Empty state */
           <div className="text-center py-20">
-            <div className="w-16 h-16 bg-[#F0E8D8] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-7 h-7 text-[#D4A054]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-onyx-raised rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-gold" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.35-4.35"/>
               </svg>
             </div>
-            <h3 className="text-[#2C221E] font-medium mb-2">No se encontraron productos</h3>
-            <p className="text-[#7A6E65] text-sm mb-6">
+            <h3 className="text-ivory font-medium mb-2">No se encontraron productos</h3>
+            <p className="text-smoke text-sm mb-6">
               {hasFilters
                 ? 'Intenta con otros filtros o terminos de busqueda.'
                 : 'Aun no hay productos disponibles.'}
@@ -132,8 +132,8 @@ export default async function CatalogPage({ searchParams }: PageParams) {
             {hasFilters && (
               <Link
                 href="/"
-                className="inline-block px-6 py-2.5 bg-[#E86A33] text-white text-xs font-medium
-                           tracking-widest uppercase rounded-full hover:bg-[#d05a28] transition-colors"
+                className="inline-block px-6 py-2.5 bg-gold text-onyx text-xs font-medium
+                           tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors"
               >
                 Ver todos los productos
               </Link>

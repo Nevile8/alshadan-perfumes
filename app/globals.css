@@ -2,16 +2,7 @@
 
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
 :root {
-  /* Storefront light-luxury palette */
-  --cream:        #FAF3EB;
-  --cream-card:   #FFFFFF;
-  --gold:         #D4A054;
-  --orange:       #E86A33;
-  --border-warm:  #E8DEC8;
-  --text-primary: #2C221E;
-  --text-muted:   #7A6E65;
-
-  /* Body stays dark — cream is scoped to (storefront)/layout.tsx */
+  /* Body stays dark — the onyx storefront palette is scoped to (storefront)/layout.tsx */
   --background: #0a0a0a;
   --foreground: #ededed;
 }
@@ -21,12 +12,48 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Storefront onyx palette */
+  --color-onyx:        #161417;
+  --color-onyx-card:   #1E1B21;
+  --color-onyx-raised: #26222B;
+  --color-line:        #3A3229;
+  --color-line-strong: #52473A;
+  --color-ivory:       #F3ECDF;
+  --color-smoke:       #A9A196;
+  --color-gold:        #CDA65E;
+  --color-gold-deep:   #B48D47;
+  --color-gold-soft:   #E3C98F;
+  --color-royal:       #13286B;
+  --color-royal-deep:  #0C1A4A;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ─── Storefront background: onyx glow + open arabesque lattice ──────────── */
+.storefront-bg {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 90% 700px at 50% 0, #2C2632 0%, transparent 100%),
+    var(--color-onyx);
+}
+
+.storefront-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/patterns/open-lattice.svg");
+  background-size: 96px 96px;
+  opacity: 0.32;
+  -webkit-mask-image: linear-gradient(#000 0, #000 640px, rgba(0, 0, 0, 0.55) 1400px);
+          mask-image: linear-gradient(#000 0, #000 640px, rgba(0, 0, 0, 0.55) 1400px);
 }
 
 /* ─── Cart Drawer Animation ──────────────────────────────────────────────── */

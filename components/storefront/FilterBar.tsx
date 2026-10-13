@@ -47,8 +47,8 @@ export function FilterBar() {
               onClick={() => setParam('gender', f.value)}
               className={`px-5 py-1.5 rounded-full text-sm font-medium border transition-all ${
                 isActive
-                  ? 'bg-[#D4A054] border-[#D4A054] text-white shadow-sm'
-                  : 'bg-white border-[#E8DEC8] text-[#7A6E65] hover:border-[#D4A054] hover:text-[#2C221E]'
+                  ? 'bg-gold border-gold text-onyx shadow-sm'
+                  : 'bg-onyx-card border-line text-smoke hover:border-gold hover:text-ivory'
               }`}
             >
               {f.label}
@@ -59,15 +59,15 @@ export function FilterBar() {
 
       {/* Sort dropdown */}
       <div className="flex items-center gap-2">
-        <label htmlFor="sort" className="text-xs text-[#7A6E65] uppercase tracking-wider whitespace-nowrap">
+        <label htmlFor="sort" className="text-xs text-smoke uppercase tracking-wider whitespace-nowrap">
           Ordenar:
         </label>
         <select
           id="sort"
           value={activeSort}
           onChange={(e) => setParam('sort', e.target.value)}
-          className="text-sm bg-white border border-[#E8DEC8] text-[#2C221E] rounded-lg px-3 py-1.5
-                     focus:outline-none focus:border-[#D4A054] transition-colors cursor-pointer"
+          className="text-sm bg-onyx-card border border-line text-ivory rounded-lg px-3 py-1.5
+                     focus:outline-none focus:border-gold transition-colors cursor-pointer"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

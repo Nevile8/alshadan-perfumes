@@ -18,35 +18,36 @@ const NAV_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#FDF9F3] border-t border-[#E8DEC8] mt-16">
+    <footer className="bg-onyx-card/95 border-t border-gold/40 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <Image
-              src="/Logo.png"
+              src="/logo-gold.svg"
               alt="ALSHADAN"
-              width={120}
-              height={36}
-              className="h-8 w-auto object-contain"
+              width={67}
+              height={52}
+              className="h-14 w-auto object-contain"
+              unoptimized
             />
-            <p className="text-sm text-[#7A6E65] leading-relaxed">
+            <p className="text-sm text-smoke leading-relaxed">
               Fragancias de lujo cuidadosamente seleccionadas para quienes aprecian la elegancia y la distincion.
             </p>
-            <p className="text-xs text-[#7A6E65]">© {new Date().getFullYear()} ALSHADAN. Todos los derechos reservados.</p>
+            <p className="text-xs text-smoke">© {new Date().getFullYear()} ALSHADAN. Todos los derechos reservados.</p>
           </div>
 
           {/* Col 2: Categories + Navigation */}
           <div className="space-y-6">
             <div>
-              <h4 className="text-xs font-semibold tracking-widest uppercase text-[#2C221E] mb-3">
+              <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory mb-3">
                 Categorias
               </h4>
               <ul className="space-y-2">
                 {CATEGORIES.map((c) => (
                   <li key={c.href}>
-                    <Link href={c.href} className="text-sm text-[#7A6E65] hover:text-[#D4A054] transition-colors">
+                    <Link href={c.href} className="text-sm text-smoke hover:text-gold transition-colors">
                       {c.label}
                     </Link>
                   </li>
@@ -54,13 +55,13 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold tracking-widest uppercase text-[#2C221E] mb-3">
+              <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory mb-3">
                 Navegacion
               </h4>
               <ul className="space-y-2">
                 {NAV_LINKS.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-[#7A6E65] hover:text-[#D4A054] transition-colors">
+                    <Link href={l.href} className="text-sm text-smoke hover:text-gold transition-colors">
                       {l.label}
                     </Link>
                   </li>
@@ -71,13 +72,13 @@ export function Footer() {
 
           {/* Col 3: Contact info */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-widest uppercase text-[#2C221E]">
+            <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory">
               Contacto
             </h4>
-            <ul className="space-y-3 text-sm text-[#7A6E65]">
+            <ul className="space-y-3 text-sm text-smoke">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5">✉</span>
-                <a href="mailto:contacto@alshadan.com" className="hover:text-[#D4A054] transition-colors">
+                <a href="mailto:contacto@alshadan.com" className="hover:text-gold transition-colors">
                   contacto@alshadan.com
                 </a>
               </li>
@@ -94,7 +95,7 @@ export function Footer() {
 
           {/* Col 4: Contact form */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-widest uppercase text-[#2C221E]">
+            <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory">
               Escribenos
             </h4>
             <ContactForm />
