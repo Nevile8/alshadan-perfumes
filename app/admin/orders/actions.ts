@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/require-admin'
-import type { OrderStatus } from '@/lib/types/database'
+import { sendOrderCancelledEmail, sendOrderShippedEmail } from '@/lib/email'
+import type { Order, OrderStatus } from '@/lib/types/database'
 
 export async function updateOrderFulfillment(
   orderId: string,
@@ -25,12 +26,27 @@ export async function updateOrderFulfillment(
     update.tracking_url    = null
   }
 
-  const { error } = await supabase
+  const { data: before } = await supabase
+    .from('orders')
+    .select('status')
+    .eq('id', orderId)
+    .maybeSingle()
+
+  const { data: updated, error } = await supabase
     .from('orders')
     .update(update)
     .eq('id', orderId)
+    .select('*')
+    .maybeSingle()
 
   if (error) return { error: error.message }
+
+  // Notify the customer only when the status actually changes
+  const order = updated as Order | null
+  if (order && before?.status !== status) {
+    if (status === 'shipped')   await sendOrderShippedEmail(order)
+    if (status === 'cancelled') await sendOrderCancelledEmail(order)
+  }
 
   revalidatePath('/admin/orders')
   revalidatePath(`/admin/orders/${orderId}`)

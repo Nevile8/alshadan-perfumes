@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { submitContactForm } from '@/app/(storefront)/actions'
+import { ContactForm } from './ContactForm'
 
 const CATEGORIES = [
   { label: 'Hombre', href: '/?gender=hombre' },
@@ -15,49 +15,6 @@ const NAV_LINKS = [
   { label: 'Rastrear Pedido',         href: '/track' },
   { label: 'Terminos y Condiciones',  href: '/terms' },
 ]
-
-async function ContactForm() {
-  async function handleSubmit(formData: FormData) {
-    'use server'
-    await submitContactForm(formData)
-  }
-
-  return (
-    <form action={handleSubmit} className="space-y-3">
-      <input
-        name="name"
-        type="text"
-        placeholder="Nombre"
-        required
-        className="w-full px-4 py-2.5 text-sm bg-white border border-[#E8DEC8] rounded-lg
-                   text-[#2C221E] placeholder-[#7A6E65] focus:outline-none focus:border-[#D4A054] transition-colors"
-      />
-      <input
-        name="email"
-        type="email"
-        placeholder="Correo electronico"
-        required
-        className="w-full px-4 py-2.5 text-sm bg-white border border-[#E8DEC8] rounded-lg
-                   text-[#2C221E] placeholder-[#7A6E65] focus:outline-none focus:border-[#D4A054] transition-colors"
-      />
-      <textarea
-        name="message"
-        placeholder="Mensaje"
-        rows={3}
-        required
-        className="w-full px-4 py-2.5 text-sm bg-white border border-[#E8DEC8] rounded-lg
-                   text-[#2C221E] placeholder-[#7A6E65] focus:outline-none focus:border-[#D4A054] transition-colors resize-none"
-      />
-      <button
-        type="submit"
-        className="w-full py-2.5 bg-[#E86A33] text-white text-xs font-medium tracking-widest
-                   uppercase rounded-lg hover:bg-[#d05a28] transition-colors"
-      >
-        Enviar Mensaje
-      </button>
-    </form>
-  )
-}
 
 export function Footer() {
   return (
