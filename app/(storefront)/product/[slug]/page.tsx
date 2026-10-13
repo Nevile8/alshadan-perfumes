@@ -52,7 +52,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-smoke mb-8">
+      <nav className="flex items-center gap-2 text-xs text-ivory/75 mb-8">
         <Link href="/" className="hover:text-gold transition-colors">Inicio</Link>
         <span>/</span>
         <Link href={`/?gender=${product.gender}`} className="hover:text-gold transition-colors capitalize">
@@ -85,8 +85,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           {/* Olfactory notes visual display */}
           {product.olfactory_notes.length > 0 && (
-            <div className="bg-onyx-raised border border-line rounded-xl p-5">
-              <p className="text-xs text-smoke uppercase tracking-widest mb-3">Notas Olfativas</p>
+            <div className="bg-onyx-card/95 border border-line rounded-xl p-5 backdrop-blur-sm">
+              <p className="text-xs text-gold uppercase tracking-widest mb-3">Notas Olfativas</p>
               <div className="flex flex-wrap gap-2">
                 {product.olfactory_notes.map((note: string) => (
                   <span
@@ -103,7 +103,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         {/* ── Right: Info + Selectors ────────────────────────────────────── */}
-        <div className="space-y-6">
+        <div className="self-start space-y-6 rounded-2xl border border-line bg-onyx-card/95
+                        p-6 sm:p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
           {/* Brand + Name */}
           <div>
             <p className="text-xs font-semibold tracking-[0.3em] text-gold uppercase mb-2">
@@ -121,7 +122,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           {/* Description */}
           {product.description && (
-            <p className="text-sm text-smoke leading-relaxed border-t border-line pt-5">
+            <p className="text-[15px] text-ivory/85 leading-relaxed border-t border-line pt-5">
               {product.description}
             </p>
           )}
@@ -134,7 +135,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </div>
 
           {/* Stock info */}
-          <div className="flex items-center gap-2 text-xs text-smoke">
+          <div className="flex items-center gap-2 text-xs text-ivory/80">
             <span className="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
             En stock — envio a todo Chile
           </div>
