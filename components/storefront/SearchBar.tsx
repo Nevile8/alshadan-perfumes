@@ -49,7 +49,7 @@ export function SearchBar() {
     <div className="relative flex items-center w-full max-w-md">
       {/* Search icon */}
       <svg
-        className="absolute left-3 w-4 h-4 text-[#7A6E65] pointer-events-none"
+        className="absolute left-3 w-4 h-4 text-ivory/60 pointer-events-none"
         fill="none" stroke="currentColor" strokeWidth="2"
         viewBox="0 0 24 24"
       >
@@ -62,8 +62,8 @@ export function SearchBar() {
         value={value}
         onChange={handleChange}
         placeholder="Buscar perfumes..."
-        className="w-full pl-9 pr-8 py-2 text-sm bg-[#FDF9F3] border border-[#E8DEC8] rounded-full
-                   text-[#2C221E] placeholder-[#7A6E65] focus:outline-none focus:border-[#D4A054]
+        className="w-full pl-9 pr-8 py-2 text-sm bg-white/10 border border-white/20 rounded-full
+                   text-ivory placeholder-ivory/55 focus:outline-none focus:border-gold
                    transition-colors"
       />
 
@@ -71,7 +71,7 @@ export function SearchBar() {
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-3 text-[#7A6E65] hover:text-[#2C221E] transition-colors"
+          className="absolute right-3 text-ivory/60 hover:text-ivory transition-colors"
           aria-label="Limpiar búsqueda"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

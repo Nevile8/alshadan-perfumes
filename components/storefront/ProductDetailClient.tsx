@@ -17,7 +17,7 @@ export function ProductDetailClient({ product, variants }: ProductDetailClientPr
 
   if (variants.length === 0) {
     return (
-      <p className="text-sm text-[#7A6E65] italic">
+      <p className="text-sm text-smoke italic">
         No hay variantes disponibles para este producto.
       </p>
     )

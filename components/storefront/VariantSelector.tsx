@@ -20,7 +20,7 @@ export function VariantSelector({ variants, onVariantChange }: VariantSelectorPr
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-[#7A6E65] uppercase tracking-widest">Selecciona el tamano</p>
+      <p className="text-xs text-smoke uppercase tracking-widest">Selecciona el tamano</p>
       <div className="flex flex-wrap gap-3">
         {sorted.map((variant) => {
           const isSelected    = variant.id === selectedId
@@ -34,18 +34,18 @@ export function VariantSelector({ variants, onVariantChange }: VariantSelectorPr
               onClick={() => handleSelect(variant)}
               className={`relative flex flex-col items-center px-5 py-3 rounded-xl border-2 transition-all
                 ${isSelected
-                  ? 'border-[#D4A054] bg-[#D4A054]/10 shadow-sm'
-                  : 'border-[#E8DEC8] bg-white hover:border-[#D4A054]/50'}
+                  ? 'border-gold bg-gold/10 shadow-sm'
+                  : 'border-line bg-onyx-card hover:border-gold/50'}
                 ${isOutOfStock ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <span className={`text-sm font-semibold ${isSelected ? 'text-[#D4A054]' : 'text-[#2C221E]'}`}>
+              <span className={`text-sm font-semibold ${isSelected ? 'text-gold' : 'text-ivory'}`}>
                 {variant.size_ml} ml
               </span>
-              <span className={`text-xs mt-0.5 ${isSelected ? 'text-[#D4A054]' : 'text-[#7A6E65]'}`}>
+              <span className={`text-xs mt-0.5 ${isSelected ? 'text-gold' : 'text-smoke'}`}>
                 {formatPrice(variant.price)}
               </span>
               {isOutOfStock && (
-                <span className="absolute -top-2 -right-2 text-[9px] bg-red-100 text-red-600 border border-red-200 px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-2 -right-2 text-[9px] bg-red-900/40 text-red-400 border border-red-800/60 px-1.5 py-0.5 rounded-full">
                   Agotado
                 </span>
               )}

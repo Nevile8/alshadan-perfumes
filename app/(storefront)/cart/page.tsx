@@ -72,12 +72,12 @@ export default function CartPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-light text-[#2C221E] tracking-wide">Carrito de Compras</h1>
-          <p className="text-sm text-[#7A6E65] mt-1">{totalItems} producto{totalItems !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-light text-ivory tracking-wide">Carrito de Compras</h1>
+          <p className="text-sm text-smoke mt-1">{totalItems} producto{totalItems !== 1 ? 's' : ''}</p>
         </div>
         <Link
           href="/"
-          className="text-sm text-[#7A6E65] hover:text-[#D4A054] transition-colors flex items-center gap-1"
+          className="text-sm text-smoke hover:text-gold transition-colors flex items-center gap-1"
         >
           ← Volver a la tienda
         </Link>
@@ -86,19 +86,19 @@ export default function CartPage() {
       {items.length === 0 ? (
         /* Empty state */
         <div className="text-center py-20">
-          <div className="w-20 h-20 rounded-full bg-[#F0E8D8] flex items-center justify-center mx-auto mb-5">
-            <svg className="w-9 h-9 text-[#D4A054]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <div className="w-20 h-20 rounded-full bg-onyx-raised flex items-center justify-center mx-auto mb-5">
+            <svg className="w-9 h-9 text-gold" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </div>
-          <h2 className="text-lg font-medium text-[#2C221E] mb-2">Tu carrito esta vacio</h2>
-          <p className="text-sm text-[#7A6E65] mb-8">Explora nuestra coleccion de perfumes de lujo.</p>
+          <h2 className="text-lg font-medium text-ivory mb-2">Tu carrito esta vacio</h2>
+          <p className="text-sm text-smoke mb-8">Explora nuestra coleccion de perfumes de lujo.</p>
           <Link
             href="/"
-            className="inline-block px-8 py-3 bg-[#E86A33] text-white text-sm font-medium
-                       tracking-widest uppercase rounded-full hover:bg-[#d05a28] transition-colors"
+            className="inline-block px-8 py-3 bg-gold text-onyx text-sm font-medium
+                       tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors"
           >
             Explorar Perfumes
           </Link>
@@ -107,7 +107,7 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Items list */}
           <div className="lg:col-span-2">
-            <div className="bg-white border border-[#E8DEC8] rounded-2xl px-6">
+            <div className="bg-onyx-card border border-line rounded-2xl px-6">
               {items.map((item) => (
                 <CartItemRow key={item.variantId} item={item} />
               ))}
@@ -115,7 +115,7 @@ export default function CartPage() {
 
             <button
               onClick={clearCart}
-              className="mt-4 text-xs text-[#7A6E65] hover:text-red-500 transition-colors underline underline-offset-2"
+              className="mt-4 text-xs text-smoke hover:text-red-500 transition-colors underline underline-offset-2"
             >
               Vaciar carrito
             </button>
@@ -123,8 +123,8 @@ export default function CartPage() {
 
           {/* Summary */}
           <div className="space-y-4">
-            <div className="bg-white border border-[#E8DEC8] rounded-2xl p-6 space-y-4 sticky top-24">
-              <h2 className="text-sm font-semibold text-[#2C221E] uppercase tracking-wider">
+            <div className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4 sticky top-24">
+              <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
                 Resumen del Pedido
               </h2>
 
@@ -138,20 +138,20 @@ export default function CartPage() {
                     onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon() }}
                     placeholder="Codigo de cupon"
                     disabled={!!appliedCoupon}
-                    className="flex-1 min-w-0 px-3 py-2 text-sm bg-[#FDF9F3] border border-[#E8DEC8] rounded-lg uppercase
-                               text-[#2C221E] placeholder-[#7A6E65] placeholder:normal-case focus:outline-none focus:border-[#D4A054] transition-colors
+                    className="flex-1 min-w-0 px-3 py-2 text-sm bg-onyx-raised border border-line rounded-lg uppercase
+                               text-ivory placeholder-smoke placeholder:normal-case focus:outline-none focus:border-gold transition-colors
                                disabled:opacity-70"
                   />
                   {appliedCoupon ? (
                     <button type="button" onClick={handleRemoveCoupon}
-                            className="px-4 py-2 text-xs font-medium text-[#7A6E65] border border-[#E8DEC8]
-                                       rounded-lg hover:text-red-500 hover:border-red-300 transition-colors">
+                            className="px-4 py-2 text-xs font-medium text-smoke border border-line
+                                       rounded-lg hover:text-red-500 hover:border-red-700/60 transition-colors">
                       Quitar
                     </button>
                   ) : (
                     <button type="button" onClick={handleApplyCoupon} disabled={couponLoading || !codeInput.trim()}
-                            className="px-4 py-2 text-xs font-medium text-[#D4A054] border border-[#D4A054]
-                                       rounded-lg hover:bg-[#D4A054] hover:text-white transition-colors
+                            className="px-4 py-2 text-xs font-medium text-gold border border-gold
+                                       rounded-lg hover:bg-gold hover:text-onyx transition-colors
                                        disabled:opacity-40 disabled:cursor-not-allowed">
                       {couponLoading ? '...' : 'Aplicar'}
                     </button>
@@ -159,37 +159,37 @@ export default function CartPage() {
                 </div>
                 {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
                 {appliedCoupon && (
-                  <p className="text-green-600 text-xs mt-1">✓ Cupón {appliedCoupon.code} aplicado</p>
+                  <p className="text-green-400 text-xs mt-1">✓ Cupón {appliedCoupon.code} aplicado</p>
                 )}
               </div>
 
-              <div className="border-t border-[#E8DEC8] pt-4 space-y-2">
-                <div className="flex justify-between text-sm text-[#7A6E65]">
+              <div className="border-t border-line pt-4 space-y-2">
+                <div className="flex justify-between text-sm text-smoke">
                   <span>Subtotal</span>
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
+                  <div className="flex justify-between text-sm text-green-400">
                     <span>Descuento</span>
                     <span>− {formatPrice(discount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-[#7A6E65]">
+                <div className="flex justify-between text-sm text-smoke">
                   <span>Envio</span>
-                  <span className="text-green-600">Calculado al pagar</span>
+                  <span className="text-green-400">Calculado al pagar</span>
                 </div>
               </div>
 
-              <div className="border-t border-[#E8DEC8] pt-4 flex justify-between font-semibold text-[#2C221E]">
+              <div className="border-t border-line pt-4 flex justify-between font-semibold text-ivory">
                 <span>Total</span>
                 <span>{formatPrice(totalPrice - discount)}</span>
               </div>
 
               <Link
                 href="/checkout"
-                className="block w-full py-4 bg-[#E86A33] text-white text-sm font-semibold
+                className="block w-full py-4 bg-gold text-onyx text-sm font-semibold
                            tracking-widest uppercase rounded-xl text-center
-                           hover:bg-[#d05a28] transition-colors"
+                           hover:bg-gold-deep transition-colors"
               >
                 Finalizar Compra
               </Link>

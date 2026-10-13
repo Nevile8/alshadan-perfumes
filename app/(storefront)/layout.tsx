@@ -5,7 +5,7 @@ import { CartProvider } from '@/components/storefront/CartProvider'
 export default function StorefrontLayout({ children }: { children: React.ReactNode }) {
   return (
     <CartProvider>
-      <div className="min-h-screen bg-[#FAF3EB] text-[#2C221E] flex flex-col">
+      <div className="storefront-bg min-h-screen text-ivory flex flex-col">
         <Header />
         <main className="flex-1">
           {children}

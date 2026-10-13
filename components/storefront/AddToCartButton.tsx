@@ -46,8 +46,8 @@ export function AddToCartButton({ product, variant }: AddToCartButtonProps) {
         ${added
           ? 'bg-green-600 text-white'
           : isDisabled
-            ? 'bg-[#E8DEC8] text-[#7A6E65] cursor-not-allowed'
-            : 'bg-[#E86A33] text-white hover:bg-[#d05a28] active:scale-[0.98]'}`}
+            ? 'bg-line text-smoke cursor-not-allowed'
+            : 'bg-gold text-onyx hover:bg-gold-deep active:scale-[0.98]'}`}
     >
       {added
         ? '✓ Agregado al Carrito'
