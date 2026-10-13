@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useMemo } from 'react'
+import { useEffect, useState, useTransition, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCartStore } from '@/lib/store/cart'
@@ -28,7 +28,7 @@ const inputClass = `w-full px-4 py-3 text-sm bg-white border border-[#E8DEC8] ro
 const labelClass = 'block text-xs text-[#7A6E65] uppercase tracking-wider mb-1.5'
 
 export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) {
-  const { items, getTotalPrice, getTotalItems } = useCartStore()
+  const { items, getTotalPrice, getTotalItems, couponCode: storedCode, setCouponCode: setStoredCode } = useCartStore()
   const [isPending, startTransition] = useTransition()
 
   // Form fields
@@ -63,13 +63,28 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
     : null
 
   // Coupon discount
-  const discount = appliedCoupon
+  // Same rule as the server: never discount more than the products themselves
+  const rawDiscount = appliedCoupon
     ? appliedCoupon.discount_type === 'percentage'
-      ? Math.round(subtotal * appliedCoupon.discount_value / 100)
-      : appliedCoupon.discount_value
+      ? Math.round(subtotal * Number(appliedCoupon.discount_value) / 100)
+      : Number(appliedCoupon.discount_value)
     : 0
+  const discount = Math.max(0, Math.min(rawDiscount, subtotal - 1))
 
   const total = subtotal - discount + (shippingCost ?? 0)
+
+  // Apply a coupon already accepted in the cart (re-validated against this subtotal)
+  useEffect(() => {
+    if (!storedCode || subtotal === 0) return
+    let cancelled = false
+    validateCoupon(storedCode, subtotal).then((result) => {
+      if (cancelled) return
+      setCouponCode(storedCode)
+      setAppliedCoupon(result.coupon)
+      setCouponError(result.error)
+    })
+    return () => { cancelled = true }
+  }, [storedCode, subtotal])
 
   async function handleApplyCoupon() {
     if (!couponCode.trim()) return
@@ -79,8 +94,10 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
     if (result.error) {
       setCouponError(result.error)
       setAppliedCoupon(null)
+      setStoredCode(null)
     } else {
       setAppliedCoupon(result.coupon)
+      setStoredCode(result.coupon?.code ?? null)
     }
     setCouponLoading(false)
   }
@@ -283,7 +300,7 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
                 <input
                   type="text"
                   value={couponCode}
-                  onChange={(e) => { setCouponCode(e.target.value); setAppliedCoupon(null); setCouponError(null) }}
+                  onChange={(e) => { setCouponCode(e.target.value); setAppliedCoupon(null); setCouponError(null); setStoredCode(null) }}
                   placeholder="DESCUENTO10"
                   className={`${inputClass} flex-1`}
                 />

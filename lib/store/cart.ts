@@ -18,12 +18,14 @@ export interface CartItem {
 interface CartState {
   items:       CartItem[]
   isOpen:      boolean
+  couponCode:  string | null   // applied in the cart, re-validated at checkout
 
   // Actions
   addItem:        (item: Omit<CartItem, 'quantity'>) => void
   removeItem:     (variantId: string) => void
   updateQuantity: (variantId: string, quantity: number) => void
   clearCart:      () => void
+  setCouponCode:  (code: string | null) => void
   openDrawer:     () => void
   closeDrawer:    () => void
 
@@ -37,8 +39,9 @@ interface CartState {
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
-      items:  [],
-      isOpen: false,
+      items:      [],
+      isOpen:     false,
+      couponCode: null,
 
       addItem: (item) =>
         set((state) => {
@@ -72,7 +75,9 @@ export const useCartStore = create<CartState>()(
           }
         }),
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], couponCode: null }),
+
+      setCouponCode: (code) => set({ couponCode: code }),
 
       openDrawer:  () => set({ isOpen: true }),
       closeDrawer: () => set({ isOpen: false }),
@@ -83,8 +88,8 @@ export const useCartStore = create<CartState>()(
     {
       name:    'alshadan-cart',   // localStorage key
       version: 1,
-      // Only persist items, not drawer open state
-      partialize: (state) => ({ items: state.items }),
+      // Only persist items and coupon, not drawer open state
+      partialize: (state) => ({ items: state.items, couponCode: state.couponCode }),
     }
   )
 )
