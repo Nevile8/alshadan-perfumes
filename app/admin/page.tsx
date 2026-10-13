@@ -1,20 +1,26 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
+import {
+  ORDER_STATUSES,
+  ORDER_STATUS_CARD,
+  ORDER_STATUS_HINT,
+  ORDER_STATUS_LABEL,
+} from '@/lib/order-status'
 
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient()
 
-  const [{ count: totalProducts }, { count: activeProducts }, { count: totalOrders }] =
+  const [{ count: totalProducts }, { count: activeProducts }, { count: totalOrders }, ...statusCounts] =
     await Promise.all([
       supabase.from('products').select('*', { count: 'exact', head: true }),
       supabase.from('products').select('*', { count: 'exact', head: true }).eq('is_active', true),
       supabase.from('orders').select('*', { count: 'exact', head: true }),
+      ...ORDER_STATUSES.map((status) =>
+        supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', status)
+      ),
     ])
 
-  const stats = [
-    { label: 'Total Productos', value: totalProducts ?? 0, sub: `${activeProducts ?? 0} activos` },
-    { label: 'Total Órdenes', value: totalOrders ?? 0, sub: 'Todas las órdenes' },
-  ]
+  const byStatus = ORDER_STATUSES.map((status, i) => ({ status, count: statusCounts[i].count ?? 0 }))
 
   return (
     <div>
@@ -31,15 +37,40 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      {/* Stats */}
+      {/* Orders by status */}
+      <div className="flex items-baseline justify-between mb-3">
+        <h3 className="text-neutral-400 text-xs tracking-wider uppercase">Órdenes por estado</h3>
+        <Link href="/admin/orders" className="text-neutral-500 hover:text-white text-xs transition-colors">
+          {totalOrders ?? 0} en total · Ver todas →
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        {byStatus.map(({ status, count }) => {
+          const style = ORDER_STATUS_CARD[status]
+          return (
+            <Link
+              key={status}
+              href={`/admin/orders?status=${status}`}
+              className={`bg-neutral-900 border border-neutral-800 border-t-4 ${style.border} rounded-lg p-5 hover:bg-neutral-800/60 transition-colors`}
+            >
+              <p className="flex items-center gap-2 text-neutral-300 text-xs tracking-wider uppercase mb-2">
+                <span className={`w-2 h-2 rounded-full ${style.dot}`} />
+                {ORDER_STATUS_LABEL[status]}
+              </p>
+              <p className={`text-3xl font-light mb-1 ${count > 0 ? style.text : 'text-neutral-600'}`}>{count}</p>
+              <p className="text-neutral-600 text-xs">{ORDER_STATUS_HINT[status]}</p>
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Products */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
-            <p className="text-neutral-500 text-xs tracking-wider uppercase mb-2">{stat.label}</p>
-            <p className="text-3xl font-light text-white mb-1">{stat.value}</p>
-            <p className="text-neutral-600 text-xs">{stat.sub}</p>
-          </div>
-        ))}
+        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
+          <p className="text-neutral-500 text-xs tracking-wider uppercase mb-2">Total Productos</p>
+          <p className="text-3xl font-light text-white mb-1">{totalProducts ?? 0}</p>
+          <p className="text-neutral-600 text-xs">{activeProducts ?? 0} activos</p>
+        </div>
       </div>
 
       {/* Quick actions */}

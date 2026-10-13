@@ -15,17 +15,32 @@ export function CouponForm({ coupon }: { coupon?: Coupon }) {
   const action = coupon ? updateCoupon.bind(null, coupon.id) : createCoupon
   const [state, formAction, isPending] = useActionState<CouponFormState, FormData>(action, null)
   const [type, setType] = useState<'percentage' | 'fixed'>(coupon?.discount_type ?? 'percentage')
+  const [code, setCode] = useState(coupon?.code ?? '')
   const codeLocked = !!coupon && coupon.current_uses > 0
+
+  function generateCode() {
+    // 6 random digits; the server still rejects a code that already exists
+    const n = crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000
+    setCode(String(n).padStart(6, '0'))
+  }
 
   return (
     <form action={formAction} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 space-y-5 max-w-2xl">
       <div>
         <label htmlFor="code" className={labelClass}>Código</label>
-        <input
-          id="code" name="code" required defaultValue={coupon?.code ?? ''} readOnly={codeLocked}
-          placeholder="VERANO10" maxLength={30}
-          className={`${inputClass} font-mono uppercase ${codeLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
-        />
+        <div className="flex gap-2">
+          <input
+            id="code" name="code" required value={code} onChange={(e) => setCode(e.target.value)} readOnly={codeLocked}
+            placeholder="VERANO10" maxLength={30}
+            className={`${inputClass} font-mono uppercase ${codeLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+          />
+          {!codeLocked && (
+            <button type="button" onClick={generateCode}
+                    className="px-4 text-xs text-neutral-300 border border-neutral-700 rounded hover:border-neutral-500 hover:text-white transition-colors whitespace-nowrap">
+              Generar 6 dígitos
+            </button>
+          )}
+        </div>
         <p className={hintClass}>
           {codeLocked ? 'Ya fue usado, así que el código no se puede cambiar.' : 'Letras, números, guion o guion bajo. Los clientes pueden escribirlo en mayúsculas o minúsculas.'}
         </p>

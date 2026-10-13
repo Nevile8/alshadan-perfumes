@@ -1,6 +1,8 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SurchargeForm } from '@/components/admin/SurchargeForm'
 import { CommuneTable } from '@/components/admin/CommuneTable'
+import { RegionPriceForm } from '@/components/admin/RegionPriceForm'
+import { formatPrice } from '@/lib/utils'
 import type { Commune, StoreSetting } from '@/lib/types/database'
 
 export default async function AdminShippingPage() {
@@ -29,7 +31,7 @@ export default async function AdminShippingPage() {
       <div className="mb-8">
         <h2 className="text-2xl font-light text-white tracking-wide">Gestionar Envios</h2>
         <p className="text-neutral-500 text-sm mt-1">
-          Configura los precios por comuna y el porcentaje adicional por perfume extra.
+          Configura los precios por comuna o por región completa, y el porcentaje adicional por perfume extra.
         </p>
       </div>
 
@@ -47,13 +49,22 @@ export default async function AdminShippingPage() {
       {/* Communes by region */}
       <div className="space-y-6">
         {Object.entries(byRegion).map(([key, regionCommunes]) => {
-          const [, regionName] = key.split('__')
+          const [regionCode, regionName] = key.split('__')
+          const prices = regionCommunes.map((c) => c.base_price)
+          const min = Math.min(...prices)
+          const max = Math.max(...prices)
           return (
             <div key={key} className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
-              <div className="px-5 py-3 border-b border-neutral-800 bg-neutral-800/40">
-                <h4 className="text-xs font-semibold text-neutral-300 uppercase tracking-widest">
-                  {regionName}
-                </h4>
+              <div className="px-5 py-3 border-b border-neutral-800 bg-neutral-800/40 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-semibold text-neutral-300 uppercase tracking-widest">
+                    {regionName}
+                  </h4>
+                  <p className="text-[11px] text-neutral-500 mt-0.5">
+                    {regionCommunes.length} comunas · {min === max ? formatPrice(min) : `${formatPrice(min)} – ${formatPrice(max)}`}
+                  </p>
+                </div>
+                <RegionPriceForm regionCode={regionCode} regionName={regionName} communeCount={regionCommunes.length} />
               </div>
               <CommuneTable communes={regionCommunes} />
             </div>
