@@ -58,8 +58,8 @@ export function TrackOrderClient() {
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
             required
-            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            className={`${inputClass} font-mono text-xs`}
+            placeholder="Ej: 3F2A91BC"
+            className={`${inputClass} font-mono uppercase`}
           />
         </div>
         <div>

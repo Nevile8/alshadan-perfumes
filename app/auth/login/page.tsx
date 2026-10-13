@@ -26,8 +26,12 @@ export default function LoginPage() {
       return
     }
 
+    // Return to the page that sent the user here (proxy adds ?next=), same-site paths only
+    const next = new URLSearchParams(window.location.search).get('next') ?? '/'
+    const safeNext = next.startsWith('/') && !next.startsWith('//') && !next.startsWith('/\\') ? next : '/'
+
     router.refresh()
-    router.push('/')
+    router.push(safeNext)
   }
 
   return (

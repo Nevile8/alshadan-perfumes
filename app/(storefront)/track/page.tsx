@@ -10,7 +10,7 @@ export default function TrackOrderPage() {
         <p className="text-xs tracking-[0.4em] text-[#D4A054] uppercase mb-3">Seguimiento</p>
         <h1 className="text-3xl font-light text-[#2C221E] tracking-wide mb-3">Rastrear Pedido</h1>
         <p className="text-sm text-[#7A6E65] max-w-sm mx-auto">
-          Ingresa el número de orden y el correo electrónico utilizado al comprar.
+          Ingresa el número de orden (los 8 caracteres después del #) y el correo electrónico utilizado al comprar.
         </p>
       </div>
       <Suspense>
