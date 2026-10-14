@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { submitContactForm, type ContactFormState } from '@/app/(storefront)/actions'
+import { LIMITS } from '@/lib/limits'
 
 const inputClass = `w-full px-4 py-2.5 text-sm bg-onyx-card border border-line rounded-lg
                     text-ivory placeholder-smoke focus:outline-none focus:border-gold transition-colors`
@@ -20,14 +21,14 @@ export function ContactForm() {
   return (
     <form action={formAction} className="space-y-3">
       <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
-      <input name="name" type="text" placeholder="Nombre" required maxLength={100} className={inputClass} />
-      <input name="email" type="email" placeholder="Correo electronico" required maxLength={254} className={inputClass} />
+      <input name="name" type="text" placeholder="Nombre" required maxLength={LIMITS.name} className={inputClass} />
+      <input name="email" type="email" placeholder="Correo electronico" required maxLength={LIMITS.email} className={inputClass} />
       <textarea
         name="message"
         placeholder="Mensaje"
         rows={3}
         required
-        maxLength={5000}
+        maxLength={LIMITS.message}
         className={`${inputClass} resize-none`}
       />
       {state?.error && <p className="text-red-500 text-xs">{state.error}</p>}

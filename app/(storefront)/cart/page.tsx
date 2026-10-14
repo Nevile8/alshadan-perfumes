@@ -7,6 +7,7 @@ import { CartItemRow } from '@/components/storefront/CartItemRow'
 import { formatPrice } from '@/lib/utils'
 import { validateCoupon } from '@/app/(storefront)/checkout/actions'
 import type { Coupon } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 /** Same rule as checkout: never discount the whole order. */
 function couponDiscount(coupon: Coupon | null, subtotal: number): number {
@@ -137,6 +138,7 @@ export default function CartPage() {
                     onChange={(e) => { setCodeInput(e.target.value); setCouponError(null) }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon() }}
                     placeholder="Codigo de cupon"
+                    maxLength={LIMITS.couponCode}
                     disabled={!!appliedCoupon}
                     className="flex-1 min-w-0 px-3 py-2 text-sm bg-onyx-raised border border-line rounded-lg uppercase
                                text-ivory placeholder-smoke placeholder:normal-case focus:outline-none focus:border-gold transition-colors

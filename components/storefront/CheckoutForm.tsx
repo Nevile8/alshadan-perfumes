@@ -7,6 +7,7 @@ import { useCartStore } from '@/lib/store/cart'
 import { processCheckout, validateCoupon } from '@/app/(storefront)/checkout/actions'
 import { formatPrice, calculateShipping } from '@/lib/utils'
 import type { Commune, Coupon } from '@/lib/types/database'
+import { LIMITS } from '@/lib/limits'
 
 interface CheckoutFormProps {
   communes:         Commune[]
@@ -157,22 +158,22 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
               <div className="col-span-2">
                 <label className={labelClass}>Nombre completo</label>
                 <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                  required placeholder="Juan Pérez" className={inputClass} />
+                  required maxLength={LIMITS.name} placeholder="Juan Pérez" className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>RUT</label>
                 <input type="text" value={rut} onChange={(e) => setRut(e.target.value)}
-                  required placeholder="12.345.678-9" className={inputClass} />
+                  required maxLength={LIMITS.rut} placeholder="12.345.678-9" className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Teléfono</label>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  required placeholder="+56 9 XXXX XXXX" className={inputClass} />
+                  required maxLength={LIMITS.phone} placeholder="+56 9 XXXX XXXX" className={inputClass} />
               </div>
               <div className="col-span-2">
                 <label className={labelClass}>Correo electrónico</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  required placeholder="juan@correo.com" className={inputClass} />
+                  required maxLength={LIMITS.email} placeholder="juan@correo.com" className={inputClass} />
               </div>
             </div>
           </section>
@@ -221,12 +222,12 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
               <div className="col-span-2">
                 <label className={labelClass}>Dirección</label>
                 <input type="text" value={address} onChange={(e) => setAddress(e.target.value)}
-                  required placeholder="Av. Providencia 1234, Depto 5B" className={inputClass} />
+                  required maxLength={LIMITS.address} placeholder="Av. Providencia 1234, Depto 5B" className={inputClass} />
               </div>
               <div className="col-span-2">
                 <label className={labelClass}>Información adicional (opcional)</label>
                 <input type="text" value={extraInfo} onChange={(e) => setExtraInfo(e.target.value)}
-                  placeholder="Código de acceso, referencia, etc." className={inputClass} />
+                  maxLength={LIMITS.extraInfo} placeholder="Código de acceso, referencia, etc." className={inputClass} />
               </div>
             </div>
           </section>
@@ -302,6 +303,7 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
                   value={couponCode}
                   onChange={(e) => { setCouponCode(e.target.value); setAppliedCoupon(null); setCouponError(null); setStoredCode(null) }}
                   placeholder="DESCUENTO10"
+                  maxLength={LIMITS.couponCode}
                   className={`${inputClass} flex-1`}
                 />
                 <button

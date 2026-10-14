@@ -4,13 +4,15 @@ import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/require-admin'
 
+const MAX_SHIPPING_PRICE = 1_000_000
+
 // ─── Surcharge ────────────────────────────────────────────────────────────────
 
 export async function updateSurchargePercent(
   percent: number
 ): Promise<{ error: string | null }> {
   await requireAdmin()
-  if (percent < 0 || percent > 100) return { error: 'El porcentaje debe estar entre 0 y 100.' }
+  if (typeof percent !== 'number' || !Number.isFinite(percent) || percent < 0 || percent > 100) return { error: 'El porcentaje debe estar entre 0 y 100.' }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
   const { error } = await supabase
@@ -28,7 +30,8 @@ export async function updateCommunePrice(
   basePrice: number
 ): Promise<{ error: string | null }> {
   await requireAdmin()
-  if (basePrice < 0) return { error: 'El precio no puede ser negativo.' }
+  if (typeof id !== 'string' || id.length > 40) return { error: 'Comuna no válida.' }
+  if (!Number.isInteger(basePrice) || basePrice < 0 || basePrice > MAX_SHIPPING_PRICE) return { error: 'El precio debe ser un número entero, 0 o mayor.' }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
   const { error } = await supabase
@@ -46,7 +49,8 @@ export async function updateRegionPrice(
   basePrice: number
 ): Promise<{ error: string | null; updated: number }> {
   await requireAdmin()
-  if (!Number.isInteger(basePrice) || basePrice < 0) return { error: 'El precio debe ser un número entero, 0 o mayor.', updated: 0 }
+  if (typeof regionCode !== 'string' || regionCode.length > 10) return { error: 'Región no válida.', updated: 0 }
+  if (!Number.isInteger(basePrice) || basePrice < 0 || basePrice > MAX_SHIPPING_PRICE) return { error: 'El precio debe ser un número entero, 0 o mayor.', updated: 0 }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
   const { data, error } = await supabase
@@ -64,6 +68,7 @@ export async function toggleCommuneActive(
   isActive: boolean
 ): Promise<{ error: string | null }> {
   await requireAdmin()
+  if (typeof id !== 'string' || id.length > 40 || typeof isActive !== 'boolean') return { error: 'Datos inválidos.' }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createAdminClient() as any
   const { error } = await supabase

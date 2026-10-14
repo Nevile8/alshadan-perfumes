@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { lookupOrder } from '@/app/(storefront)/track/actions'
 import { formatPrice } from '@/lib/utils'
 import type { Order, OrderItem, ShippingAddress } from '@/lib/types/database'
+import { LIMITS, safeHttpUrl } from '@/lib/limits'
 
 const STEPS: { status: string; label: string; icon: string }[] = [
   { status: 'pending',   label: 'Pendiente',  icon: '◎' },
@@ -59,6 +60,7 @@ export function TrackOrderClient() {
             onChange={(e) => setOrderId(e.target.value)}
             required
             placeholder="Ej: 3F2A91BC"
+            maxLength={LIMITS.orderCode}
             className={`${inputClass} font-mono uppercase`}
           />
         </div>
@@ -72,6 +74,7 @@ export function TrackOrderClient() {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="correo@ejemplo.com"
+            maxLength={LIMITS.email}
             className={inputClass}
           />
         </div>
@@ -156,9 +159,9 @@ export function TrackOrderClient() {
                   <p className="text-xs text-smoke uppercase tracking-wider mb-1">Número de Tracking</p>
                   <p className="font-mono font-semibold text-ivory">{order.tracking_number}</p>
                 </div>
-                {order.tracking_url && (
+                {safeHttpUrl(order.tracking_url) && (
                   <a
-                    href={order.tracking_url}
+                    href={safeHttpUrl(order.tracking_url) ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-gold text-onyx text-xs font-medium tracking-widest
