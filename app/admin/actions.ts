@@ -112,6 +112,16 @@ function validateProduct(data: ProductInput): { product: ProductInput | null; er
   if (typeof data.is_active !== 'boolean') return { product: null, error: 'Datos inválidos.' }
   if (imageUrl === null || (imageUrl && !isOwnImageUrl(imageUrl))) return { product: null, error: 'La imagen debe subirse desde este panel.' }
 
+  const rawGallery = data.gallery_urls ?? []
+  if (!Array.isArray(rawGallery) || rawGallery.length > LIMITS.galleryCount)
+    return { product: null, error: `Máximo ${LIMITS.galleryCount} fotos adicionales.` }
+  const gallery: string[] = []
+  for (const url of rawGallery) {
+    const clean = cleanString(url, 500)
+    if (!clean || !isOwnImageUrl(clean)) return { product: null, error: 'Las fotos deben subirse desde este panel.' }
+    if (clean !== imageUrl && !gallery.includes(clean)) gallery.push(clean)
+  }
+
   const slug = cleanString(data.slug ?? '', LIMITS.slug) || generateSlug(name).slice(0, LIMITS.slug)
   if (!SLUG_RE.test(slug)) return { product: null, error: 'El slug solo puede tener minúsculas, números y guiones.' }
 
@@ -135,11 +145,12 @@ function validateProduct(data: ProductInput): { product: ProductInput | null; er
       !isIntInRange(v.size_ml, 1, 10_000) ||
       !isIntInRange(v.stock, 0, 100_000) ||
       typeof v.price !== 'number' || !Number.isFinite(v.price) || v.price < 0 || v.price > 100_000_000 ||
+      (v.cost != null && (typeof v.cost !== 'number' || !Number.isFinite(v.cost) || v.cost < 0 || v.cost > 100_000_000)) ||
       sku === null
     ) {
-      return { product: null, error: 'Revisa las variantes: tamaño, precio y stock deben ser números válidos y el SKU máximo de 40 caracteres.' }
+      return { product: null, error: 'Revisa las variantes: tamaño, precio, costo y stock deben ser números válidos y el SKU máximo de 40 caracteres.' }
     }
-    variants.push({ id: v.id, size_ml: v.size_ml, price: v.price, stock: v.stock, sku: sku || undefined })
+    variants.push({ id: v.id, size_ml: v.size_ml, price: v.price, cost: v.cost ?? null, stock: v.stock, sku: sku || undefined })
   }
 
   return {
@@ -148,6 +159,7 @@ function validateProduct(data: ProductInput): { product: ProductInput | null; er
       gender: data.gender,
       olfactory_notes: notes,
       image_url: imageUrl || undefined,
+      gallery_urls: gallery,
       is_active: data.is_active,
       variants,
     },
@@ -171,6 +183,7 @@ export interface VariantInput {
   id?: string
   size_ml: number
   price: number
+  cost?: number | null  // purchase cost, admin only (product_variant_costs)
   stock: number
   sku?: string
 }
@@ -183,8 +196,20 @@ export interface ProductInput {
   description?: string
   olfactory_notes: string[]
   image_url?: string
+  gallery_urls?: string[]
   is_active: boolean
   variants: VariantInput[]
+}
+
+/** Saves or clears the purchase cost of one variant. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function saveVariantCost(supabase: any, variantId: string, cost: number | null | undefined) {
+  if (cost == null) {
+    return supabase.from('product_variant_costs').delete().eq('variant_id', variantId)
+  }
+  return supabase
+    .from('product_variant_costs')
+    .upsert({ variant_id: variantId, cost }, { onConflict: 'variant_id' })
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
@@ -210,6 +235,7 @@ export async function createProduct(
       description: data.description?.trim() || null,
       olfactory_notes: data.olfactory_notes,
       image_url: data.image_url || null,
+      gallery_urls: data.gallery_urls ?? [],
       is_active: data.is_active,
     })
     .select('id')
@@ -218,7 +244,7 @@ export async function createProduct(
   if (productError) return { error: productError.message }
 
   if (data.variants.length > 0) {
-    const { error: variantsError } = await supabase.from('product_variants').insert(
+    const { data: inserted, error: variantsError } = await supabase.from('product_variants').insert(
       data.variants.map((v: VariantInput) => ({
         product_id: product.id,
         size_ml: v.size_ml,
@@ -226,8 +252,17 @@ export async function createProduct(
         stock: v.stock,
         sku: v.sku?.trim() || null,
       }))
-    )
+    ).select('id, size_ml')
     if (variantsError) return { error: variantsError.message }
+
+    // size_ml is unique per product, so it matches each new row to its input
+    for (const row of (inserted ?? []) as { id: string; size_ml: number }[]) {
+      const cost = data.variants.find((v) => v.size_ml === row.size_ml)?.cost
+      if (cost != null) {
+        const { error: costError } = await saveVariantCost(supabase, row.id, cost)
+        if (costError) return { error: costError.message }
+      }
+    }
   }
 
   revalidatePath('/admin/products')
@@ -260,6 +295,7 @@ export async function updateProduct(
       description: data.description?.trim() || null,
       olfactory_notes: data.olfactory_notes,
       image_url: data.image_url || null,
+      gallery_urls: data.gallery_urls ?? [],
       is_active: data.is_active,
     })
     .eq('id', productId)
@@ -271,8 +307,9 @@ export async function updateProduct(
   }
 
   for (const v of data.variants as VariantInput[]) {
+    let variantId: string | undefined
     if (v.id) {
-      await supabase
+      const { data: updated } = await supabase
         .from('product_variants')
         .update({
           size_ml: v.size_ml,
@@ -282,14 +319,27 @@ export async function updateProduct(
         })
         .eq('id', v.id)
         .eq('product_id', productId)
+        .select('id')
+        .maybeSingle()
+      variantId = updated?.id
     } else {
-      await supabase.from('product_variants').insert({
-        product_id: productId,
-        size_ml: v.size_ml,
-        price: v.price,
-        stock: v.stock,
-        sku: v.sku?.trim() || null,
-      })
+      const { data: inserted } = await supabase
+        .from('product_variants')
+        .insert({
+          product_id: productId,
+          size_ml: v.size_ml,
+          price: v.price,
+          stock: v.stock,
+          sku: v.sku?.trim() || null,
+        })
+        .select('id')
+        .single()
+      variantId = inserted?.id
+    }
+    // Only for variants confirmed to belong to this product
+    if (variantId) {
+      const { error: costError } = await saveVariantCost(supabase, variantId, v.cost)
+      if (costError) return { error: costError.message }
     }
   }
 

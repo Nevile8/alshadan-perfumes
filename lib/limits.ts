@@ -28,6 +28,7 @@ export const LIMITS = {
   notesCount:    20,
   sku:           40,
   variantsCount: 20,
+  galleryCount:  8,
   // Admin: orders
   trackingNumber: 60,
   trackingUrl:    500,
