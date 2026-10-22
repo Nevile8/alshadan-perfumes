@@ -24,7 +24,8 @@ export interface Product {
   gender: ProductGender
   description: string | null
   olfactory_notes: string[]   // e.g. ['bergamot', 'sandalwood', 'musk']
-  image_url: string | null
+  image_url: string | null    // cover: product card and first photo on the product page
+  gallery_urls: string[]      // extra photos, shown only on the product page
   is_active: boolean
   created_at: string
   updated_at: string
@@ -38,6 +39,13 @@ export interface ProductVariant {
   stock: number
   sku: string | null
   created_at: string
+  updated_at: string
+}
+
+/** Admin only: purchase cost of a variant. Never select this from the storefront. */
+export interface ProductVariantCost {
+  variant_id: string          // FK → product_variants.id
+  cost: number                // in CLP
   updated_at: string
 }
 
@@ -127,6 +135,11 @@ export type Database = {
         Row: ProductVariant
         Insert: Omit<ProductVariant, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<ProductVariant, 'id' | 'created_at' | 'updated_at'>>
+      }
+      product_variant_costs: {
+        Row: ProductVariantCost
+        Insert: Omit<ProductVariantCost, 'updated_at'>
+        Update: Partial<Omit<ProductVariantCost, 'variant_id' | 'updated_at'>>
       }
       orders: {
         Row: Order

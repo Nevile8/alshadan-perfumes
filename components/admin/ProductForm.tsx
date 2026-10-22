@@ -4,14 +4,17 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
+import { GalleryUpload } from './GalleryUpload'
 import { createProduct, updateProduct } from '@/app/admin/actions'
 import type { Product, ProductVariant, ProductGender } from '@/lib/types/database'
 import { LIMITS } from '@/lib/limits'
+import { formatPrice, profitMargin } from '@/lib/utils'
 
 interface VariantRow {
   id?: string
   size_ml: string
   price: string
+  cost: string
   stock: string
   sku: string
 }
@@ -20,6 +23,8 @@ interface ProductFormProps {
   mode: 'create' | 'edit'
   product?: Product
   variants?: ProductVariant[]
+  /** Purchase cost by variant id (admin only) */
+  costs?: Record<string, number>
 }
 
 const GENDER_OPTIONS: { value: ProductGender; label: string }[] = [
@@ -38,7 +43,7 @@ function slugify(str: string) {
     .replace(/\s+/g, '-')
 }
 
-export function ProductForm({ mode, product, variants = [] }: ProductFormProps) {
+export function ProductForm({ mode, product, variants = [], costs = {} }: ProductFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -51,6 +56,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
   const [description, setDescription] = useState(product?.description ?? '')
   const [notes, setNotes] = useState<string[]>(product?.olfactory_notes ?? [])
   const [imageUrl, setImageUrl] = useState<string>(product?.image_url ?? '')
+  const [gallery, setGallery] = useState<string[]>(product?.gallery_urls ?? [])
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
   const [error, setError] = useState<string | null>(null)
 
@@ -61,10 +67,11 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
           id: v.id,
           size_ml: String(v.size_ml),
           price: String(v.price),
+          cost: costs[v.id] != null ? String(costs[v.id]) : '',
           stock: String(v.stock),
           sku: v.sku ?? '',
         }))
-      : [{ size_ml: '', price: '', stock: '', sku: '' }]
+      : [{ size_ml: '', price: '', cost: '', stock: '', sku: '' }]
   )
   const [deletedVariantIds, setDeletedVariantIds] = useState<string[]>([])
 
@@ -75,7 +82,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
 
   function addVariant() {
     if (variantRows.length >= LIMITS.variantsCount) return
-    setVariantRows((rows) => [...rows, { size_ml: '', price: '', stock: '', sku: '' }])
+    setVariantRows((rows) => [...rows, { size_ml: '', price: '', cost: '', stock: '', sku: '' }])
   }
 
   function removeVariant(index: number) {
@@ -88,6 +95,12 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
     setVariantRows((rows) =>
       rows.map((row, i) => (i === index ? { ...row, [field]: value } : row))
     )
+  }
+
+  function makeCover(url: string) {
+    // The old cover takes the chosen photo's place in the gallery
+    setGallery((urls) => urls.flatMap((u) => (u === url ? (imageUrl ? [imageUrl] : []) : [u])))
+    setImageUrl(url)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -110,11 +123,13 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
       description,
       olfactory_notes: notes,
       image_url: imageUrl || undefined,
+      gallery_urls: gallery,
       is_active: isActive,
       variants: variantRows.map((v) => ({
         id: v.id,
         size_ml: parseInt(v.size_ml),
         price: parseFloat(v.price),
+        cost: v.cost === '' ? null : parseFloat(v.cost),
         stock: parseInt(v.stock),
         sku: v.sku || undefined,
       })),
@@ -232,8 +247,16 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
 
       {/* Image */}
       <section className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 space-y-4">
-        <h3 className="text-sm text-neutral-300 tracking-wider uppercase">Imagen del Producto</h3>
-        <ImageUpload currentUrl={imageUrl || null} onUpload={(url) => setImageUrl(url)} />
+        <h3 className="text-sm text-neutral-300 tracking-wider uppercase">Imagen de Portada</h3>
+        <p className="text-neutral-500 text-xs">Se usa en el catálogo y como primera foto en la página del perfume.</p>
+        {/* key: remount when the cover is swapped from the gallery so the preview follows */}
+        <ImageUpload key={imageUrl} currentUrl={imageUrl || null} onUpload={(url) => setImageUrl(url)} />
+      </section>
+
+      {/* Gallery */}
+      <section className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 space-y-4">
+        <h3 className="text-sm text-neutral-300 tracking-wider uppercase">Fotos Adicionales</h3>
+        <GalleryUpload urls={gallery} onChange={setGallery} onMakeCover={makeCover} />
       </section>
 
       {/* Olfactory Notes */}
@@ -259,14 +282,20 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
         <div className="space-y-3">
           {/* Header */}
           <div className="grid grid-cols-12 gap-3 text-xs text-neutral-600 uppercase tracking-wider px-1">
-            <span className="col-span-3">Tamaño (ml)</span>
-            <span className="col-span-3">Precio (CLP)</span>
+            <span className="col-span-2">Tamaño (ml)</span>
+            <span className="col-span-2">Precio (CLP)</span>
+            <span className="col-span-2">Costo (CLP)</span>
+            <span className="col-span-1">Margen</span>
             <span className="col-span-2">Stock</span>
-            <span className="col-span-3">SKU</span>
+            <span className="col-span-2">SKU</span>
             <span className="col-span-1" />
           </div>
 
-          {variantRows.map((row, i) => (
+          {variantRows.map((row, i) => {
+            const price  = parseFloat(row.price)
+            const cost   = row.cost === '' ? null : parseFloat(row.cost)
+            const margin = profitMargin(price, cost)
+            return (
             <div key={i} className="grid grid-cols-12 gap-3 items-center">
               <input
                 type="number"
@@ -275,7 +304,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 placeholder="100"
                 min="1"
                 max="10000"
-                className={`col-span-3 ${inputClass} py-2`}
+                className={`col-span-2 ${inputClass} py-2`}
               />
               <input
                 type="number"
@@ -285,8 +314,26 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 min="0"
                 max="100000000"
                 step="100"
-                className={`col-span-3 ${inputClass} py-2`}
+                className={`col-span-2 ${inputClass} py-2`}
               />
+              <input
+                type="number"
+                value={row.cost}
+                onChange={(e) => updateVariant(i, 'cost', e.target.value)}
+                placeholder="45000"
+                min="0"
+                max="100000000"
+                title="Costo de compra por unidad. Solo visible en el panel."
+                className={`col-span-2 ${inputClass} py-2`}
+              />
+              <span
+                title={margin != null ? `Ganancia por unidad: ${formatPrice(price - cost!)}` : 'Ingresa precio y costo'}
+                className={`col-span-1 text-sm tabular-nums ${
+                  margin == null ? 'text-neutral-600' : margin < 0 ? 'text-red-400' : margin < 20 ? 'text-amber-400' : 'text-green-400'
+                }`}
+              >
+                {margin != null ? `${margin.toFixed(1)}%` : '—'}
+              </span>
               <input
                 type="number"
                 value={row.stock}
@@ -302,7 +349,7 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 onChange={(e) => updateVariant(i, 'sku', e.target.value)}
                 placeholder="RO-100"
                 maxLength={LIMITS.sku}
-                className={`col-span-3 ${inputClass} py-2`}
+                className={`col-span-2 ${inputClass} py-2`}
               />
               <button
                 type="button"
@@ -313,7 +360,11 @@ export function ProductForm({ mode, product, variants = [] }: ProductFormProps) 
                 ×
               </button>
             </div>
-          ))}
+            )
+          })}
+          <p className="text-neutral-600 text-xs px-1">
+            Margen = (precio − costo) ÷ precio. El costo es opcional y nunca se muestra en la tienda.
+          </p>
         </div>
       </section>
 

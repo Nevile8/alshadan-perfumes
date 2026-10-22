@@ -2,7 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { DeleteButton } from '@/components/admin/DeleteButton'
-import type { Product, ProductVariant } from '@/lib/types/database'
+import { profitMargin } from '@/lib/utils'
+import type { Product, ProductVariant, ProductVariantCost } from '@/lib/types/database'
 
 type ProductWithVariants = Product & { product_variants: ProductVariant[] }
 
@@ -14,6 +15,22 @@ export default async function AdminProductsPage() {
     .order('created_at', { ascending: false })
 
   const rows = (products ?? []) as ProductWithVariants[]
+
+  const { data: costRows } = await supabase.from('product_variant_costs').select('variant_id, cost')
+  const costByVariant = new Map(
+    ((costRows ?? []) as Pick<ProductVariantCost, 'variant_id' | 'cost'>[]).map((c) => [c.variant_id, Number(c.cost)])
+  )
+
+  /** Lowest–highest margin across the product's variants that have a cost, e.g. "32% – 41%". */
+  function marginLabel(variants: ProductVariant[]): string | null {
+    const margins = variants
+      .map((v) => profitMargin(Number(v.price), costByVariant.get(v.id)))
+      .filter((m): m is number => m != null)
+    if (margins.length === 0) return null
+    const min = Math.round(Math.min(...margins))
+    const max = Math.round(Math.max(...margins))
+    return min === max ? `${min}%` : `${min}% – ${max}%`
+  }
 
   const genderLabel: Record<string, string> = {
     hombre: 'Hombre',
@@ -57,6 +74,7 @@ export default async function AdminProductsPage() {
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Marca</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Género</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Variantes</th>
+                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Margen</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Estado</th>
                 <th className="text-right px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Acciones</th>
               </tr>
@@ -97,6 +115,9 @@ export default async function AdminProductsPage() {
                   </td>
                   <td className="px-4 py-3 text-neutral-400">
                     {product.product_variants.length} variante{product.product_variants.length !== 1 ? 's' : ''}
+                  </td>
+                  <td className="px-4 py-3 text-neutral-400 tabular-nums">
+                    {marginLabel(product.product_variants) ?? <span className="text-neutral-600">Sin costo</span>}
                   </td>
                   <td className="px-4 py-3">
                     <span

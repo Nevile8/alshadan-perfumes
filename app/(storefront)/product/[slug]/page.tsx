@@ -1,9 +1,10 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { ProductDetailClient } from '@/components/storefront/ProductDetailClient'
+import { ProductGallery } from '@/components/storefront/ProductGallery'
+import { availableSizes } from '@/lib/utils'
 import type { Product, ProductVariant } from '@/lib/types/database'
 
 type PageProps = { params: Promise<{ slug: string }> }
@@ -48,6 +49,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   const product  = data as Product & { product_variants: ProductVariant[] }
   const variants = [...product.product_variants].sort((a, b) => a.size_ml - b.size_ml)
+  const sizes    = availableSizes(variants)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -65,23 +67,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
         {/* ── Left: Image ───────────────────────────────────────────────── */}
         <div className="space-y-4">
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-onyx-raised border border-line">
-            {product.image_url ? (
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                <span className="text-6xl text-line-strong">◈</span>
-                <span className="text-xs text-line-strong tracking-widest uppercase">Alshadan</span>
-              </div>
-            )}
-          </div>
+          <ProductGallery
+            name={product.name}
+            coverUrl={product.image_url}
+            gallery={product.gallery_urls ?? []}
+          />
 
           {/* Olfactory notes visual display */}
           {product.olfactory_notes.length > 0 && (
@@ -118,6 +108,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
                              px-3 py-1 rounded-full bg-onyx-raised text-gold border border-line">
               {GENDER_LABEL[product.gender]}
             </span>
+            <p className="mt-3 text-sm text-ivory/85">
+              {sizes.length > 0
+                ? <>Disponible en <span className="text-gold font-medium">{sizes.map((ml) => `${ml} ml`).join(' · ')}</span></>
+                : 'Sin stock por el momento'}
+            </p>
           </div>
 
           {/* Description */}

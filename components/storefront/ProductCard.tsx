@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { formatPrice } from '@/lib/utils'
+import { availableSizes, formatPrice } from '@/lib/utils'
 import type { Product, ProductVariant } from '@/lib/types/database'
 
 type ProductWithVariants = Product & { product_variants: ProductVariant[] }
@@ -24,6 +24,7 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
   const priceLabel = prices.length > 1
     ? `Desde ${formatPrice(minPrice)}`
     : minPrice != null ? formatPrice(minPrice) : 'Consultar'
+  const sizes = availableSizes(variants)
 
   return (
     <Link
@@ -71,7 +72,14 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
       <div className="p-4 flex flex-col gap-1">
         <p className="text-xs text-smoke uppercase tracking-widest">{product.brand}</p>
         <h3 className="text-ivory font-medium text-sm leading-tight line-clamp-2">{product.name}</h3>
-        <p className="text-gold font-semibold text-sm mt-1">{priceLabel}</p>
+        <div className="flex items-baseline justify-between gap-2 mt-1">
+          <p className="text-gold font-semibold text-sm">{priceLabel}</p>
+          {variants.length > 0 && (
+            <p className="text-xs text-ivory/75 tabular-nums text-right">
+              {sizes.length > 0 ? sizes.map((ml) => `${ml} ml`).join(' · ') : 'Agotado'}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   )
