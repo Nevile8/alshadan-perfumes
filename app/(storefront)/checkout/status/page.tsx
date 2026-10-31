@@ -48,27 +48,27 @@ export default async function CheckoutStatusPage({ searchParams }: Props) {
       {isSuccess && <ClearCartClient />}
 
       <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-        isSuccess ? 'bg-green-900/40' : isPending ? 'bg-yellow-900/40' : 'bg-red-900/40'
+        isSuccess ? 'bg-green-100' : isPending ? 'bg-yellow-100' : 'bg-red-100'
       }`}>
         {icon}
       </div>
 
-      <h1 className="text-2xl font-light text-ivory mb-3 tracking-wide">{title}</h1>
+      <h1 className="text-2xl font-light text-ink mb-3 tracking-wide">{title}</h1>
       
       {external_reference && (
-        <p className="text-smoke text-sm mb-2">
-          Orden <strong className="text-ivory font-mono">#{external_reference.slice(0, 8).toUpperCase()}</strong>
+        <p className="text-muted text-sm mb-2">
+          Orden <strong className="text-ink font-mono">#{external_reference.slice(0, 8).toUpperCase()}</strong>
         </p>
       )}
 
-      <p className="text-smoke text-sm mb-8">{message}</p>
+      <p className="text-muted text-sm mb-8">{message}</p>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         {isSuccess || isPending ? (
           <Link
             href="/track"
-            className="px-8 py-3 bg-gold text-onyx text-sm font-medium
-                       tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors"
+            className="px-8 py-3 bg-accent text-page text-sm font-medium
+                       tracking-widest uppercase rounded-full hover:bg-accent-deep transition-colors"
           >
             Rastrear Pedido
           </Link>
@@ -78,8 +78,8 @@ export default async function CheckoutStatusPage({ searchParams }: Props) {
           href="/"
           className={`px-8 py-3 text-sm font-medium tracking-widest uppercase rounded-full transition-colors ${
             isSuccess || isPending
-              ? 'bg-onyx-raised text-ivory hover:bg-line'
-              : 'bg-gold text-onyx hover:bg-gold-deep'
+              ? 'bg-surface-2 text-ink hover:bg-line'
+              : 'bg-accent text-page hover:bg-accent-deep'
           }`}
         >
           {isSuccess || isPending ? 'Volver a la Tienda' : 'Intentar de Nuevo'}

@@ -4,15 +4,15 @@ import { useActionState } from 'react'
 import { submitContactForm, type ContactFormState } from '@/app/(storefront)/actions'
 import { LIMITS } from '@/lib/limits'
 
-const inputClass = `w-full px-4 py-2.5 text-sm bg-onyx-card border border-line rounded-lg
-                    text-ivory placeholder-smoke focus:outline-none focus:border-gold transition-colors`
+const inputClass = `w-full px-4 py-2.5 text-sm bg-surface border border-line rounded-lg
+                    text-ink placeholder-muted focus:outline-none focus:border-accent transition-colors`
 
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState<ContactFormState, FormData>(submitContactForm, null)
 
   if (state?.success) {
     return (
-      <p className="text-sm text-ivory bg-onyx-card border border-line rounded-lg px-4 py-3">
+      <p className="text-sm text-ink bg-surface border border-line rounded-lg px-4 py-3">
         ¡Gracias! Recibimos tu mensaje y te responderemos pronto.
       </p>
     )
@@ -35,8 +35,8 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full py-2.5 bg-gold text-onyx text-xs font-medium tracking-widest
-                   uppercase rounded-lg hover:bg-gold-deep transition-colors disabled:opacity-50"
+        className="w-full py-2.5 bg-accent text-page text-xs font-medium tracking-widest
+                   uppercase rounded-lg hover:bg-accent-deep transition-colors disabled:opacity-50"
       >
         {isPending ? 'Enviando...' : 'Enviar Mensaje'}
       </button>

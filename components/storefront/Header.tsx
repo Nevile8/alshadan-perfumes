@@ -16,7 +16,7 @@ export async function Header() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <header className="bg-royal border-b border-gold/70 sticky top-0 z-40">
+    <header className="bg-ink border-b border-accent sticky top-0 z-40">
       {/* Top row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
@@ -24,10 +24,10 @@ export async function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Image
-              src="/logo-gold.svg"
+              src="/logo-light.svg"
               alt="ALSHADAN Luxury Perfumes"
-              width={67}
-              height={52}
+              width={66}
+              height={51}
               className="h-11 w-auto object-contain"
               unoptimized
               priority
@@ -52,18 +52,18 @@ export async function Header() {
             {user ? (
               <Link
                 href="/account"
-                className="text-xs font-medium tracking-wider uppercase text-gold-soft
-                           border border-gold/60 px-3 py-1.5 rounded-full
-                           hover:border-gold transition-colors hidden sm:inline-block"
+                className="text-xs font-medium tracking-wider uppercase text-page
+                           border border-sage/60 px-3 py-1.5 rounded-full
+                           hover:border-sage transition-colors hidden sm:inline-block"
               >
                 Mi Cuenta
               </Link>
             ) : (
               <Link
                 href="/auth/login"
-                className="text-xs font-medium tracking-wider uppercase text-gold-soft
-                           border border-gold px-4 py-1.5 rounded-full
-                           hover:bg-gold hover:text-onyx transition-colors hidden sm:inline-block"
+                className="text-xs font-medium tracking-wider uppercase text-page
+                           border border-sage px-4 py-1.5 rounded-full
+                           hover:bg-accent hover:text-page transition-colors hidden sm:inline-block"
               >
                 Ingresar
               </Link>
@@ -80,16 +80,16 @@ export async function Header() {
       </div>
 
       {/* Bottom nav row */}
-      <div className="border-t border-white/10 bg-royal-deep/40">
+      <div className="border-t border-white/10 bg-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-6 h-10 overflow-x-auto">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-xs font-medium tracking-widest uppercase text-ivory/75
-                           hover:text-gold-soft transition-colors whitespace-nowrap
-                           border-b-2 border-transparent hover:border-gold py-2"
+                className="text-xs font-medium tracking-widest uppercase text-page/75
+                           hover:text-sage transition-colors whitespace-nowrap
+                           border-b-2 border-transparent hover:border-sage py-2"
               >
                 {link.label}
               </Link>

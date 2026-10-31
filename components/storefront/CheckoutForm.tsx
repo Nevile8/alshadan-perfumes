@@ -23,10 +23,10 @@ function groupByRegion(communes: Commune[]): Record<string, Commune[]> {
   }, {})
 }
 
-const inputClass = `w-full px-4 py-3 text-sm bg-onyx-card border border-line rounded-xl
-                    text-ivory placeholder-smoke focus:outline-none focus:border-gold
+const inputClass = `w-full px-4 py-3 text-sm bg-surface border border-line rounded-xl
+                    text-ink placeholder-muted focus:outline-none focus:border-accent
                     transition-colors`
-const labelClass = 'block text-xs text-smoke uppercase tracking-wider mb-1.5'
+const labelClass = 'block text-xs text-muted uppercase tracking-wider mb-1.5'
 
 export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) {
   const { items, getTotalPrice, getTotalItems, couponCode: storedCode, setCouponCode: setStoredCode } = useCartStore()
@@ -137,8 +137,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-smoke mb-4">Tu carrito está vacío.</p>
-        <Link href="/" className="text-gold hover:underline text-sm">← Volver a la tienda</Link>
+        <p className="text-muted mb-4">Tu carrito está vacío.</p>
+        <Link href="/" className="text-accent hover:underline text-sm">← Volver a la tienda</Link>
       </div>
     )
   }
@@ -150,8 +150,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
         <div className="lg:col-span-3 space-y-6">
 
           {/* Contact */}
-          <section className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+          <section className="bg-surface border border-line rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
               Información de Contacto
             </h2>
             <div className="grid grid-cols-2 gap-4">
@@ -179,11 +179,11 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
           </section>
 
           {/* Shipping address */}
-          <section className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+          <section className="bg-surface border border-line rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
               Dirección de Envío
             </h2>
-            <p className="text-xs text-smoke">Solo realizamos envíos dentro de Chile.</p>
+            <p className="text-xs text-muted">Solo realizamos envíos dentro de Chile.</p>
             <div className="grid grid-cols-2 gap-4">
               {/* Region */}
               <div>
@@ -233,8 +233,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
           </section>
 
           {/* Payment method */}
-          <section className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+          <section className="bg-surface border border-line rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
               Método de Pago
             </h2>
             <div className="grid grid-cols-2 gap-3">
@@ -246,16 +246,16 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
                   onClick={() => setPaymentMethod(method)}
                   className={`p-4 rounded-xl border-2 text-left transition-all ${
                     paymentMethod === method
-                      ? 'border-gold bg-gold/10'
-                      : 'border-line hover:border-gold/50'
+                      ? 'border-accent bg-accent/10'
+                      : 'border-line hover:border-accent/50'
                   }`}
                 >
                   <p className={`text-sm font-semibold capitalize ${
-                    paymentMethod === method ? 'text-gold' : 'text-ivory'
+                    paymentMethod === method ? 'text-accent' : 'text-ink'
                   }`}>
                     {method === 'mercadopago' ? 'Mercado Pago' : 'Webpay'}
                   </p>
-                  <p className="text-xs text-smoke mt-0.5">
+                  <p className="text-xs text-muted mt-0.5">
                     {method === 'mercadopago'
                       ? 'Tarjeta, débito, efectivo'
                       : 'Tarjeta de débito o crédito'}
@@ -268,8 +268,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
 
         {/* ── Right: Order Summary ─────────────────────────────────────────── */}
         <div className="lg:col-span-2">
-          <div className="bg-onyx-card border border-line rounded-2xl p-6 space-y-5 sticky top-24">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+          <div className="bg-surface border border-line rounded-2xl p-6 space-y-5 sticky top-24">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
               Resumen del Pedido
             </h2>
 
@@ -277,17 +277,17 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
             <div className="space-y-3 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.variantId} className="flex items-center gap-3">
-                  <div className="relative w-10 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-onyx-raised">
+                  <div className="relative w-10 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-surface-2">
                     {item.imageUrl
                       ? <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="40px" />
                       : <div className="w-full h-full flex items-center justify-center text-line-strong text-lg">◈</div>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-ivory font-medium line-clamp-1">{item.productName}</p>
-                    <p className="text-[10px] text-smoke">{item.size_ml}ml × {item.quantity}</p>
+                    <p className="text-xs text-ink font-medium line-clamp-1">{item.productName}</p>
+                    <p className="text-[10px] text-muted">{item.size_ml}ml × {item.quantity}</p>
                   </div>
-                  <p className="text-xs font-semibold text-gold flex-shrink-0">
+                  <p className="text-xs font-semibold text-accent flex-shrink-0">
                     {formatPrice(item.price * item.quantity)}
                   </p>
                 </div>
@@ -310,8 +310,8 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
                   type="button"
                   onClick={handleApplyCoupon}
                   disabled={couponLoading || !couponCode.trim()}
-                  className="px-4 py-3 text-xs font-medium text-gold border border-gold
-                             rounded-xl hover:bg-gold hover:text-onyx transition-colors
+                  className="px-4 py-3 text-xs font-medium text-accent border border-accent
+                             rounded-xl hover:bg-accent hover:text-page transition-colors
                              disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   {couponLoading ? '...' : 'Aplicar'}
@@ -319,7 +319,7 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
               </div>
               {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
               {appliedCoupon && (
-                <p className="text-green-400 text-xs mt-1">
+                <p className="text-green-600 text-xs mt-1">
                   ✓ Cupón aplicado — {appliedCoupon.discount_type === 'percentage'
                     ? `${appliedCoupon.discount_value}% de descuento`
                     : `${formatPrice(appliedCoupon.discount_value)} de descuento`}
@@ -329,17 +329,17 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
 
             {/* Totals */}
             <div className="border-t border-line pt-4 space-y-2 text-sm">
-              <div className="flex justify-between text-smoke">
+              <div className="flex justify-between text-muted">
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-green-400">
+                <div className="flex justify-between text-green-600">
                   <span>Descuento</span>
                   <span>− {formatPrice(discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-smoke">
+              <div className="flex justify-between text-muted">
                 <span>Envío {selectedCommuneObj ? `(${selectedCommuneObj.commune_name})` : ''}</span>
                 <span>
                   {shippingCost !== null
@@ -348,19 +348,19 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
                 </span>
               </div>
               {selectedCommuneObj && totalItems > 1 && (
-                <p className="text-[10px] text-smoke">
+                <p className="text-[10px] text-muted">
                   Base {formatPrice(selectedCommuneObj.base_price)} + {surchargePercent}% por {totalItems - 1} perfume{totalItems > 2 ? 's' : ''} adicional{totalItems > 2 ? 'es' : ''}
                 </p>
               )}
             </div>
 
-            <div className="border-t border-line pt-4 flex justify-between font-semibold text-ivory">
+            <div className="border-t border-line pt-4 flex justify-between font-semibold text-ink">
               <span>Total</span>
-              <span className="text-gold">{formatPrice(total)}</span>
+              <span className="text-accent">{formatPrice(total)}</span>
             </div>
 
             {formError && (
-              <p className="text-red-500 text-xs py-2 px-3 bg-red-950/40 border border-red-800/60 rounded-lg">
+              <p className="text-red-500 text-xs py-2 px-3 bg-red-50 border border-red-200 rounded-lg">
                 {formError}
               </p>
             )}
@@ -368,14 +368,14 @@ export function CheckoutForm({ communes, surchargePercent }: CheckoutFormProps) 
             <button
               type="submit"
               disabled={isPending || !selectedCommune}
-              className="w-full py-4 bg-gold text-onyx text-sm font-semibold tracking-widest
-                         uppercase rounded-xl hover:bg-gold-deep transition-colors
+              className="w-full py-4 bg-accent text-page text-sm font-semibold tracking-widest
+                         uppercase rounded-xl hover:bg-accent-deep transition-colors
                          disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? 'Procesando...' : `Pagar con ${paymentMethod === 'mercadopago' ? 'Mercado Pago' : 'Webpay'}`}
             </button>
 
-            <p className="text-[10px] text-smoke text-center">
+            <p className="text-[10px] text-muted text-center">
               Al continuar aceptas nuestros Términos y Condiciones.
             </p>
           </div>

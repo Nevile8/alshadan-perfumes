@@ -2,7 +2,7 @@
 
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
 :root {
-  /* Body stays dark — the onyx storefront palette is scoped to (storefront)/layout.tsx */
+  /* Body stays dark — the ivory storefront palette is scoped to (storefront)/layout.tsx */
   --background: #0a0a0a;
   --foreground: #ededed;
 }
@@ -13,19 +13,17 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Storefront onyx palette */
-  --color-onyx:        #161417;
-  --color-onyx-card:   #1E1B21;
-  --color-onyx-raised: #26222B;
-  --color-line:        #3A3229;
-  --color-line-strong: #52473A;
-  --color-ivory:       #F3ECDF;
-  --color-smoke:       #BDB5A8;
-  --color-gold:        #CDA65E;
-  --color-gold-deep:   #B48D47;
-  --color-gold-soft:   #E3C98F;
-  --color-royal:       #13286B;
-  --color-royal-deep:  #0C1A4A;
+  /* Storefront palette: ivory, sage, black, moss */
+  --color-page:        #E4E4DE; /* Marfil etéreo — background */
+  --color-sage:        #C4C5BA; /* Sabio sofisticado — header, footer */
+  --color-surface:     #F1F1EC; /* cards and panels on the ivory page */
+  --color-surface-2:   #D9DAD1; /* inputs, chips, image placeholders */
+  --color-line:        #BDBEB2;
+  --color-line-strong: #9C9D90;
+  --color-ink:         #1B1B1B; /* Negro inquietante — text */
+  --color-muted:       #4E4F47;
+  --color-accent:      #595F39; /* Musgo apagado — buttons, prices, highlights */
+  --color-accent-deep: #464B2C;
 }
 
 body {
@@ -34,13 +32,13 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ─── Storefront background: onyx glow + open arabesque lattice ──────────── */
+/* ─── Storefront background: ivory with a soft moss lattice ───────────────── */
 .storefront-bg {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(ellipse 90% 700px at 50% 0, #2C2632 0%, transparent 100%),
-    var(--color-onyx);
+    radial-gradient(ellipse 90% 700px at 50% 0, #EEEEE9 0%, transparent 100%),
+    var(--color-page);
 }
 
 .storefront-bg::before {
@@ -51,7 +49,7 @@ body {
   pointer-events: none;
   background-image: url("/patterns/open-lattice.svg");
   background-size: 96px 96px;
-  opacity: 0.32;
+  opacity: 0.16;
   -webkit-mask-image: linear-gradient(#000 0, #000 640px, rgba(0, 0, 0, 0.55) 1400px);
           mask-image: linear-gradient(#000 0, #000 640px, rgba(0, 0, 0, 0.55) 1400px);
 }
@@ -70,6 +68,11 @@ body {
 .admin-scroll::-webkit-scrollbar        { width: 4px; }
 .admin-scroll::-webkit-scrollbar-track  { background: transparent; }
 .admin-scroll::-webkit-scrollbar-thumb  { background: #404040; border-radius: 2px; }
+
+.storefront-bg select option {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
 
 select option {
   background-color: #262626;

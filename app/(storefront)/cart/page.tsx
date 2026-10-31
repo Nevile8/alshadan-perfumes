@@ -73,12 +73,12 @@ export default function CartPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-light text-ivory tracking-wide">Carrito de Compras</h1>
-          <p className="text-sm text-smoke mt-1">{totalItems} producto{totalItems !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-light text-ink tracking-wide">Carrito de Compras</h1>
+          <p className="text-sm text-muted mt-1">{totalItems} producto{totalItems !== 1 ? 's' : ''}</p>
         </div>
         <Link
           href="/"
-          className="text-sm text-smoke hover:text-gold transition-colors flex items-center gap-1"
+          className="text-sm text-muted hover:text-accent transition-colors flex items-center gap-1"
         >
           ← Volver a la tienda
         </Link>
@@ -87,19 +87,19 @@ export default function CartPage() {
       {items.length === 0 ? (
         /* Empty state */
         <div className="text-center py-20">
-          <div className="w-20 h-20 rounded-full bg-onyx-raised flex items-center justify-center mx-auto mb-5">
-            <svg className="w-9 h-9 text-gold" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <div className="w-20 h-20 rounded-full bg-surface-2 flex items-center justify-center mx-auto mb-5">
+            <svg className="w-9 h-9 text-accent" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </div>
-          <h2 className="text-lg font-medium text-ivory mb-2">Tu carrito esta vacio</h2>
-          <p className="text-sm text-smoke mb-8">Explora nuestra coleccion de perfumes de lujo.</p>
+          <h2 className="text-lg font-medium text-ink mb-2">Tu carrito esta vacio</h2>
+          <p className="text-sm text-muted mb-8">Explora nuestra coleccion de perfumes de lujo.</p>
           <Link
             href="/"
-            className="inline-block px-8 py-3 bg-gold text-onyx text-sm font-medium
-                       tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors"
+            className="inline-block px-8 py-3 bg-accent text-page text-sm font-medium
+                       tracking-widest uppercase rounded-full hover:bg-accent-deep transition-colors"
           >
             Explorar Perfumes
           </Link>
@@ -108,7 +108,7 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Items list */}
           <div className="lg:col-span-2">
-            <div className="bg-onyx-card border border-line rounded-2xl px-6">
+            <div className="bg-surface border border-line rounded-2xl px-6">
               {items.map((item) => (
                 <CartItemRow key={item.variantId} item={item} />
               ))}
@@ -116,7 +116,7 @@ export default function CartPage() {
 
             <button
               onClick={clearCart}
-              className="mt-4 text-xs text-smoke hover:text-red-500 transition-colors underline underline-offset-2"
+              className="mt-4 text-xs text-muted hover:text-red-500 transition-colors underline underline-offset-2"
             >
               Vaciar carrito
             </button>
@@ -124,8 +124,8 @@ export default function CartPage() {
 
           {/* Summary */}
           <div className="space-y-4">
-            <div className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4 sticky top-24">
-              <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+            <div className="bg-surface border border-line rounded-2xl p-6 space-y-4 sticky top-24">
+              <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
                 Resumen del Pedido
               </h2>
 
@@ -140,20 +140,20 @@ export default function CartPage() {
                     placeholder="Codigo de cupon"
                     maxLength={LIMITS.couponCode}
                     disabled={!!appliedCoupon}
-                    className="flex-1 min-w-0 px-3 py-2 text-sm bg-onyx-raised border border-line rounded-lg uppercase
-                               text-ivory placeholder-smoke placeholder:normal-case focus:outline-none focus:border-gold transition-colors
+                    className="flex-1 min-w-0 px-3 py-2 text-sm bg-surface-2 border border-line rounded-lg uppercase
+                               text-ink placeholder-muted placeholder:normal-case focus:outline-none focus:border-accent transition-colors
                                disabled:opacity-70"
                   />
                   {appliedCoupon ? (
                     <button type="button" onClick={handleRemoveCoupon}
-                            className="px-4 py-2 text-xs font-medium text-smoke border border-line
-                                       rounded-lg hover:text-red-500 hover:border-red-700/60 transition-colors">
+                            className="px-4 py-2 text-xs font-medium text-muted border border-line
+                                       rounded-lg hover:text-red-500 hover:border-red-300 transition-colors">
                       Quitar
                     </button>
                   ) : (
                     <button type="button" onClick={handleApplyCoupon} disabled={couponLoading || !codeInput.trim()}
-                            className="px-4 py-2 text-xs font-medium text-gold border border-gold
-                                       rounded-lg hover:bg-gold hover:text-onyx transition-colors
+                            className="px-4 py-2 text-xs font-medium text-accent border border-accent
+                                       rounded-lg hover:bg-accent hover:text-page transition-colors
                                        disabled:opacity-40 disabled:cursor-not-allowed">
                       {couponLoading ? '...' : 'Aplicar'}
                     </button>
@@ -161,37 +161,37 @@ export default function CartPage() {
                 </div>
                 {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
                 {appliedCoupon && (
-                  <p className="text-green-400 text-xs mt-1">✓ Cupón {appliedCoupon.code} aplicado</p>
+                  <p className="text-green-600 text-xs mt-1">✓ Cupón {appliedCoupon.code} aplicado</p>
                 )}
               </div>
 
               <div className="border-t border-line pt-4 space-y-2">
-                <div className="flex justify-between text-sm text-smoke">
+                <div className="flex justify-between text-sm text-muted">
                   <span>Subtotal</span>
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-400">
+                  <div className="flex justify-between text-sm text-green-600">
                     <span>Descuento</span>
                     <span>− {formatPrice(discount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-smoke">
+                <div className="flex justify-between text-sm text-muted">
                   <span>Envio</span>
-                  <span className="text-green-400">Calculado al pagar</span>
+                  <span className="text-green-600">Calculado al pagar</span>
                 </div>
               </div>
 
-              <div className="border-t border-line pt-4 flex justify-between font-semibold text-ivory">
+              <div className="border-t border-line pt-4 flex justify-between font-semibold text-ink">
                 <span>Total</span>
                 <span>{formatPrice(totalPrice - discount)}</span>
               </div>
 
               <Link
                 href="/checkout"
-                className="block w-full py-4 bg-gold text-onyx text-sm font-semibold
+                className="block w-full py-4 bg-accent text-page text-sm font-semibold
                            tracking-widest uppercase rounded-xl text-center
-                           hover:bg-gold-deep transition-colors"
+                           hover:bg-accent-deep transition-colors"
               >
                 Finalizar Compra
               </Link>

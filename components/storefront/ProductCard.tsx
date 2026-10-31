@@ -12,9 +12,9 @@ const GENDER_LABEL: Record<string, string> = {
 }
 
 const GENDER_COLORS: Record<string, string> = {
-  hombre: 'bg-blue-950/40 text-blue-300 border-blue-800/60',
-  mujer:  'bg-rose-950/40 text-rose-300 border-rose-800/60',
-  unisex: 'bg-amber-950/40 text-amber-300 border-amber-800/60',
+  hombre: 'bg-blue-50 text-blue-700 border-blue-200',
+  mujer:  'bg-rose-50 text-rose-700 border-rose-200',
+  unisex: 'bg-amber-50 text-amber-700 border-amber-200',
 }
 
 export function ProductCard({ product }: { product: ProductWithVariants }) {
@@ -29,11 +29,11 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group bg-onyx-card border border-line rounded-xl overflow-hidden
+      className="group bg-surface border border-line rounded-xl overflow-hidden
                  shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
     >
       {/* Image */}
-      <div className="relative aspect-[3/4] bg-onyx-raised overflow-hidden">
+      <div className="relative aspect-[3/4] bg-surface-2 overflow-hidden">
         {product.image_url ? (
           <Image
             src={product.image_url}
@@ -54,14 +54,14 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
 
         {/* Gender badge */}
         <span className={`absolute top-3 left-3 text-[10px] font-medium tracking-wider uppercase
-                         px-2 py-0.5 rounded-full border ${GENDER_COLORS[product.gender] ?? 'bg-onyx-card text-gray-400 border-gray-800/60'}`}>
+                         px-2 py-0.5 rounded-full border ${GENDER_COLORS[product.gender] ?? 'bg-surface text-gray-600 border-gray-200'}`}>
           {GENDER_LABEL[product.gender] ?? product.gender}
         </span>
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end justify-center pb-4">
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center pb-4">
           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                           bg-gold text-onyx text-xs font-medium tracking-widest uppercase
+                           bg-accent text-page text-xs font-medium tracking-widest uppercase
                            px-5 py-2 rounded-full">
             Ver Perfume
           </span>
@@ -70,12 +70,12 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
 
       {/* Info */}
       <div className="p-4 flex flex-col gap-1">
-        <p className="text-xs text-smoke uppercase tracking-widest">{product.brand}</p>
-        <h3 className="text-ivory font-medium text-sm leading-tight line-clamp-2">{product.name}</h3>
+        <p className="text-xs text-muted uppercase tracking-widest">{product.brand}</p>
+        <h3 className="text-ink font-medium text-sm leading-tight line-clamp-2">{product.name}</h3>
         <div className="flex items-baseline justify-between gap-2 mt-1">
-          <p className="text-gold font-semibold text-sm">{priceLabel}</p>
+          <p className="text-accent font-semibold text-sm">{priceLabel}</p>
           {variants.length > 0 && (
-            <p className="text-xs text-ivory/75 tabular-nums text-right">
+            <p className="text-xs text-ink/75 tabular-nums text-right">
               {sizes.length > 0 ? sizes.map((ml) => `${ml} ml`).join(' · ') : 'Agotado'}
             </p>
           )}

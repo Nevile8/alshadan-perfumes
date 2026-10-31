@@ -77,11 +77,11 @@ export default async function CatalogPage({ searchParams }: PageParams) {
     <>
       {/* Hero */}
       <section className="py-12 px-4 text-center">
-        <p className="text-xs tracking-[0.4em] text-gold uppercase mb-3">Coleccion Exclusiva</p>
-        <h1 className="text-4xl sm:text-5xl font-light text-ivory tracking-wide mb-4">
+        <p className="text-xs tracking-[0.4em] text-accent uppercase mb-3">Coleccion Exclusiva</p>
+        <h1 className="text-4xl sm:text-5xl font-light text-ink tracking-wide mb-4">
           Descubre tu Fragancia
         </h1>
-        <p className="text-smoke text-sm max-w-md mx-auto leading-relaxed">
+        <p className="text-muted text-sm max-w-md mx-auto leading-relaxed">
           Perfumes de lujo para hombre, mujer y unisex. Aromas que cuentan tu historia.
         </p>
       </section>
@@ -95,13 +95,13 @@ export default async function CatalogPage({ searchParams }: PageParams) {
 
         {/* Active search indicator */}
         {q && (
-          <div className="flex items-center gap-2 mb-6 text-sm text-smoke">
+          <div className="flex items-center gap-2 mb-6 text-sm text-muted">
             <span>Resultados para</span>
-            <span className="font-medium text-ivory">&ldquo;{q}&rdquo;</span>
-            <span className="text-smoke">— {products.length} producto{products.length !== 1 ? 's' : ''}</span>
+            <span className="font-medium text-ink">&ldquo;{q}&rdquo;</span>
+            <span className="text-muted">— {products.length} producto{products.length !== 1 ? 's' : ''}</span>
             <Link
               href={gender ? `/?gender=${gender}` : '/'}
-              className="ml-2 text-xs text-gold hover:underline"
+              className="ml-2 text-xs text-accent hover:underline"
             >
               Limpiar busqueda
             </Link>
@@ -118,14 +118,14 @@ export default async function CatalogPage({ searchParams }: PageParams) {
         ) : (
           /* Empty state */
           <div className="text-center py-20">
-            <div className="w-16 h-16 bg-onyx-raised rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-7 h-7 text-gold" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-surface-2 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-accent" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.35-4.35"/>
               </svg>
             </div>
-            <h3 className="text-ivory font-medium mb-2">No se encontraron productos</h3>
-            <p className="text-smoke text-sm mb-6">
+            <h3 className="text-ink font-medium mb-2">No se encontraron productos</h3>
+            <p className="text-muted text-sm mb-6">
               {hasFilters
                 ? 'Intenta con otros filtros o terminos de busqueda.'
                 : 'Aun no hay productos disponibles.'}
@@ -133,8 +133,8 @@ export default async function CatalogPage({ searchParams }: PageParams) {
             {hasFilters && (
               <Link
                 href="/"
-                className="inline-block px-6 py-2.5 bg-gold text-onyx text-xs font-medium
-                           tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors"
+                className="inline-block px-6 py-2.5 bg-accent text-page text-xs font-medium
+                           tracking-widest uppercase rounded-full hover:bg-accent-deep transition-colors"
               >
                 Ver todos los productos
               </Link>

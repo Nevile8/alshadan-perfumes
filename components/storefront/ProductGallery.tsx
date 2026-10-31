@@ -17,7 +17,7 @@ export function ProductGallery({ name, coverUrl, gallery }: ProductGalleryProps)
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-onyx-raised border border-line">
+      <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-surface-2 border border-line">
         {current ? (
           <Image
             src={current}
@@ -45,7 +45,7 @@ export function ProductGallery({ name, coverUrl, gallery }: ProductGalleryProps)
               aria-label={`Ver foto ${i + 1} de ${name}`}
               aria-current={i === active}
               className={`relative shrink-0 w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 transition-colors
-                ${i === active ? 'border-gold' : 'border-line hover:border-gold/50'}`}
+                ${i === active ? 'border-accent' : 'border-line hover:border-accent/50'}`}
             >
               <Image src={url} alt="" fill className="object-cover" sizes="80px" />
             </button>
