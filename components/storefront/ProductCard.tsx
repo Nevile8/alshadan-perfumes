@@ -52,12 +52,6 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
           </div>
         )}
 
-        {/* Gender badge */}
-        <span className={`absolute top-3 left-3 text-[10px] font-medium tracking-wider uppercase
-                         px-2 py-0.5 rounded-full border ${GENDER_COLORS[product.gender] ?? 'bg-surface text-gray-600 border-gray-200'}`}>
-          {GENDER_LABEL[product.gender] ?? product.gender}
-        </span>
-
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center pb-4">
           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300
@@ -70,12 +64,18 @@ export function ProductCard({ product }: { product: ProductWithVariants }) {
 
       {/* Info */}
       <div className="p-4 flex flex-col gap-1">
-        <p className="text-xs text-muted uppercase tracking-widest">{product.brand}</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-muted uppercase tracking-widest truncate">{product.brand}</p>
+          <span className={`shrink-0 text-[10px] font-medium tracking-wider uppercase
+                           px-2 py-0.5 rounded-full border ${GENDER_COLORS[product.gender] ?? 'bg-surface text-gray-600 border-gray-200'}`}>
+            {GENDER_LABEL[product.gender] ?? product.gender}
+          </span>
+        </div>
         <h3 className="text-ink font-medium text-sm leading-tight line-clamp-2">{product.name}</h3>
         <div className="flex items-baseline justify-between gap-2 mt-1">
           <p className="text-accent font-semibold text-sm">{priceLabel}</p>
           {variants.length > 0 && (
-            <p className="text-xs text-ink/75 tabular-nums text-right">
+            <p className="text-sm font-medium text-ink/80 tabular-nums text-right">
               {sizes.length > 0 ? sizes.map((ml) => `${ml} ml`).join(' · ') : 'Agotado'}
             </p>
           )}
