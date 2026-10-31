@@ -54,14 +54,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-ivory/75 mb-8">
-        <Link href="/" className="hover:text-gold transition-colors">Inicio</Link>
+      <nav className="flex items-center gap-2 text-xs text-ink/75 mb-8">
+        <Link href="/" className="hover:text-accent transition-colors">Inicio</Link>
         <span>/</span>
-        <Link href={`/?gender=${product.gender}`} className="hover:text-gold transition-colors capitalize">
+        <Link href={`/?gender=${product.gender}`} className="hover:text-accent transition-colors capitalize">
           {GENDER_LABEL[product.gender]}
         </Link>
         <span>/</span>
-        <span className="text-ivory">{product.name}</span>
+        <span className="text-ink">{product.name}</span>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
@@ -75,14 +75,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           {/* Olfactory notes visual display */}
           {product.olfactory_notes.length > 0 && (
-            <div className="bg-onyx-card/95 border border-line rounded-xl p-5 backdrop-blur-sm">
-              <p className="text-xs text-gold uppercase tracking-widest mb-3">Notas Olfativas</p>
+            <div className="bg-surface/95 border border-line rounded-xl p-5 backdrop-blur-sm">
+              <p className="text-xs text-accent uppercase tracking-widest mb-3">Notas Olfativas</p>
               <div className="flex flex-wrap gap-2">
                 {product.olfactory_notes.map((note: string) => (
                   <span
                     key={note}
-                    className="px-3 py-1.5 bg-onyx-card border border-line rounded-full
-                               text-xs text-ivory font-medium"
+                    className="px-3 py-1.5 bg-surface border border-line rounded-full
+                               text-xs text-ink font-medium"
                   >
                     {note}
                   </span>
@@ -93,44 +93,44 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         {/* ── Right: Info + Selectors ────────────────────────────────────── */}
-        <div className="self-start space-y-6 rounded-2xl border border-line bg-onyx-card/95
-                        p-6 sm:p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
+        <div className="self-start space-y-6 rounded-2xl border border-line bg-surface/95
+                        p-6 sm:p-8 shadow-2xl shadow-black/10 backdrop-blur-sm">
           {/* Brand + Name */}
           <div>
-            <p className="text-xs font-semibold tracking-[0.3em] text-gold uppercase mb-2">
+            <p className="text-xs font-semibold tracking-[0.3em] text-accent uppercase mb-2">
               {product.brand}
             </p>
-            <h1 className="text-3xl sm:text-4xl font-light text-ivory leading-tight mb-3">
+            <h1 className="text-3xl sm:text-4xl font-light text-ink leading-tight mb-3">
               {product.name}
             </h1>
             {/* Gender badge */}
             <span className="inline-block text-xs font-medium tracking-wider uppercase
-                             px-3 py-1 rounded-full bg-onyx-raised text-gold border border-line">
+                             px-3 py-1 rounded-full bg-surface-2 text-accent border border-line">
               {GENDER_LABEL[product.gender]}
             </span>
-            <p className="mt-3 text-sm text-ivory/85">
+            <p className="mt-3 text-sm text-ink/85">
               {sizes.length > 0
-                ? <>Disponible en <span className="text-gold font-medium">{sizes.map((ml) => `${ml} ml`).join(' · ')}</span></>
+                ? <>Disponible en <span className="text-accent font-medium">{sizes.map((ml) => `${ml} ml`).join(' · ')}</span></>
                 : 'Sin stock por el momento'}
             </p>
           </div>
 
           {/* Description */}
           {product.description && (
-            <p className="text-[15px] text-ivory/85 leading-relaxed border-t border-line pt-5">
+            <p className="text-[15px] text-ink/85 leading-relaxed border-t border-line pt-5">
               {product.description}
             </p>
           )}
 
           {/* Client section: variant selector + add to cart */}
           <div className="border-t border-line pt-6">
-            <Suspense fallback={<div className="h-32 animate-pulse bg-onyx-raised rounded-xl" />}>
+            <Suspense fallback={<div className="h-32 animate-pulse bg-surface-2 rounded-xl" />}>
               <ProductDetailClient product={product} variants={variants} />
             </Suspense>
           </div>
 
           {/* Stock info */}
-          <div className="flex items-center gap-2 text-xs text-ivory/80">
+          <div className="flex items-center gap-2 text-xs text-ink/80">
             <span className="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
             En stock — envio a todo Chile
           </div>

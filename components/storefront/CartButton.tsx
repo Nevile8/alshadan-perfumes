@@ -21,7 +21,7 @@ export function CartButton() {
     <button
       type="button"
       onClick={openDrawer}
-      className="relative p-2 text-ivory/80 hover:text-gold-soft transition-colors"
+      className="relative p-2 text-ink/80 hover:text-accent-deep transition-colors"
       aria-label={`Carrito${count > 0 ? ` — ${count} productos` : ''}`}
     >
       <svg
@@ -38,7 +38,7 @@ export function CartButton() {
 
       {count > 0 && (
         <span
-          className="absolute -top-1 -right-1 w-4 h-4 bg-gold text-onyx text-[10px]
+          className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-page text-[10px]
                      font-bold rounded-full flex items-center justify-center leading-none"
         >
           {count > 9 ? '9+' : count}

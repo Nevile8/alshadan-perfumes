@@ -10,11 +10,11 @@ import type { Order, OrderItem, OrderStatus, ShippingAddress } from '@/lib/types
 export const metadata = { title: 'Mi Cuenta' }
 
 const STATUS: Record<OrderStatus, { label: string; className: string }> = {
-  pending:   { label: 'Pago pendiente', className: 'bg-yellow-950/40 text-yellow-300 border-yellow-800/60' },
-  paid:      { label: 'Pagado',         className: 'bg-blue-950/40 text-blue-300 border-blue-800/60' },
-  shipped:   { label: 'Enviado',        className: 'bg-onyx-raised text-gold border-line' },
-  delivered: { label: 'Entregado',      className: 'bg-green-950/40 text-green-300 border-green-800/60' },
-  cancelled: { label: 'Cancelado',      className: 'bg-neutral-900/40 text-neutral-400 border-neutral-800/60' },
+  pending:   { label: 'Pago pendiente', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  paid:      { label: 'Pagado',         className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  shipped:   { label: 'Enviado',        className: 'bg-surface-2 text-accent border-line' },
+  delivered: { label: 'Entregado',      className: 'bg-green-50 text-green-700 border-green-200' },
+  cancelled: { label: 'Cancelado',      className: 'bg-neutral-100 text-neutral-600 border-neutral-200' },
 }
 
 function safeUrl(url: string | null): string | null {
@@ -50,13 +50,13 @@ export default async function AccountPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <p className="text-xs tracking-[0.4em] text-gold uppercase mb-2">Mi Cuenta</p>
-          <h1 className="text-2xl font-light text-ivory tracking-wide">
+          <p className="text-xs tracking-[0.4em] text-accent uppercase mb-2">Mi Cuenta</p>
+          <h1 className="text-2xl font-light text-ink tracking-wide">
             Hola{name ? `, ${name.split(' ')[0]}` : ''}
           </h1>
         </div>
         <form action={signOut}>
-          <button type="submit" className="text-sm text-smoke hover:text-red-500 transition-colors underline underline-offset-2">
+          <button type="submit" className="text-sm text-muted hover:text-red-500 transition-colors underline underline-offset-2">
             Cerrar sesión
           </button>
         </form>
@@ -65,12 +65,12 @@ export default async function AccountPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Orders */}
         <section className="lg:col-span-2 space-y-4">
-          <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">Mis pedidos</h2>
+          <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">Mis pedidos</h2>
 
           {orders.length === 0 ? (
-            <div className="bg-onyx-card border border-line rounded-2xl p-8 text-center">
-              <p className="text-sm text-smoke mb-4">Aún no tienes pedidos con esta cuenta.</p>
-              <Link href="/" className="inline-block px-6 py-2.5 bg-gold text-onyx text-xs font-medium tracking-widest uppercase rounded-full hover:bg-gold-deep transition-colors">
+            <div className="bg-surface border border-line rounded-2xl p-8 text-center">
+              <p className="text-sm text-muted mb-4">Aún no tienes pedidos con esta cuenta.</p>
+              <Link href="/" className="inline-block px-6 py-2.5 bg-accent text-page text-xs font-medium tracking-widest uppercase rounded-full hover:bg-accent-deep transition-colors">
                 Ver productos
               </Link>
             </div>
@@ -82,38 +82,38 @@ export default async function AccountPage() {
               const trackHref = `/track?${new URLSearchParams({ order: order.id, email: addr.email }).toString()}`
 
               return (
-                <article key={order.id} className="bg-onyx-card border border-line rounded-2xl p-5 space-y-4">
+                <article key={order.id} className="bg-surface border border-line rounded-2xl p-5 space-y-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-sm text-ivory">#{order.id.slice(0, 8).toUpperCase()}</p>
-                      <p className="text-xs text-smoke mt-0.5">
+                      <p className="font-mono text-sm text-ink">#{order.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="text-xs text-muted mt-0.5">
                         {new Date(order.created_at).toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </p>
                     </div>
                     <span className={`text-xs px-3 py-1 rounded-full border ${status.className}`}>{status.label}</span>
                   </div>
 
-                  <ul className="text-sm text-ivory space-y-1">
+                  <ul className="text-sm text-ink space-y-1">
                     {order.order_items.map((item) => (
                       <li key={item.id} className="flex justify-between gap-4">
                         <span>{item.product_name} ({item.size_ml}ml) × {item.quantity}</span>
-                        <span className="text-smoke whitespace-nowrap">{formatPrice(item.unit_price * item.quantity)}</span>
+                        <span className="text-muted whitespace-nowrap">{formatPrice(item.unit_price * item.quantity)}</span>
                       </li>
                     ))}
                   </ul>
 
                   <div className="border-t border-line pt-3 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-ivory">Total {formatPrice(Number(order.total))}</p>
+                    <p className="text-sm font-semibold text-ink">Total {formatPrice(Number(order.total))}</p>
                     <div className="flex flex-wrap items-center gap-3 text-xs">
                       {order.tracking_number && (
-                        <span className="text-smoke">Seguimiento: <span className="font-mono text-ivory">{order.tracking_number}</span></span>
+                        <span className="text-muted">Seguimiento: <span className="font-mono text-ink">{order.tracking_number}</span></span>
                       )}
                       {carrier && (
-                        <a href={carrier} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">
+                        <a href={carrier} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
                           Seguir envío ↗
                         </a>
                       )}
-                      <Link href={trackHref} className="text-gold hover:underline">Ver detalle</Link>
+                      <Link href={trackHref} className="text-accent hover:underline">Ver detalle</Link>
                     </div>
                   </div>
                 </article>
@@ -121,20 +121,20 @@ export default async function AccountPage() {
             })
           )}
 
-          <p className="text-xs text-smoke">
+          <p className="text-xs text-muted">
             ¿Compraste sin iniciar sesión? Encuentra ese pedido en{' '}
-            <Link href="/track" className="underline underline-offset-2 hover:text-gold">Rastrear Pedido</Link>.
+            <Link href="/track" className="underline underline-offset-2 hover:text-accent">Rastrear Pedido</Link>.
           </p>
         </section>
 
         {/* Profile + password */}
         <aside className="space-y-6">
-          <section className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">Mis datos</h2>
+          <section className="bg-surface border border-line rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">Mis datos</h2>
             <ProfileForm email={user.email ?? ''} fullName={name} phone={profile?.phone ?? ''} />
           </section>
-          <section className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">Contraseña</h2>
+          <section className="bg-surface border border-line rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">Contraseña</h2>
             <PasswordForm />
           </section>
         </aside>

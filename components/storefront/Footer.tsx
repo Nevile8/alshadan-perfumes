@@ -18,36 +18,35 @@ const NAV_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="bg-onyx-card/95 border-t border-gold/40 mt-16">
+    <footer className="bg-sage border-t border-accent/40 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <Image
-              src="/logo-gold.svg"
+              src="/logo-cropped.png"
               alt="ALSHADAN"
-              width={67}
-              height={52}
+              width={66}
+              height={51}
               className="h-14 w-auto object-contain"
-              unoptimized
             />
-            <p className="text-sm text-smoke leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed">
               Fragancias de lujo cuidadosamente seleccionadas para quienes aprecian la elegancia y la distincion.
             </p>
-            <p className="text-xs text-smoke">© {new Date().getFullYear()} ALSHADAN. Todos los derechos reservados.</p>
+            <p className="text-xs text-muted">© {new Date().getFullYear()} ALSHADAN. Todos los derechos reservados.</p>
           </div>
 
           {/* Col 2: Categories + Navigation */}
           <div className="space-y-6">
             <div>
-              <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory mb-3">
+              <h4 className="text-xs font-semibold tracking-widest uppercase text-ink mb-3">
                 Categorias
               </h4>
               <ul className="space-y-2">
                 {CATEGORIES.map((c) => (
                   <li key={c.href}>
-                    <Link href={c.href} className="text-sm text-smoke hover:text-gold transition-colors">
+                    <Link href={c.href} className="text-sm text-muted hover:text-accent transition-colors">
                       {c.label}
                     </Link>
                   </li>
@@ -55,13 +54,13 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory mb-3">
+              <h4 className="text-xs font-semibold tracking-widest uppercase text-ink mb-3">
                 Navegacion
               </h4>
               <ul className="space-y-2">
                 {NAV_LINKS.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-smoke hover:text-gold transition-colors">
+                    <Link href={l.href} className="text-sm text-muted hover:text-accent transition-colors">
                       {l.label}
                     </Link>
                   </li>
@@ -72,13 +71,13 @@ export function Footer() {
 
           {/* Col 3: Contact info */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory">
+            <h4 className="text-xs font-semibold tracking-widest uppercase text-ink">
               Contacto
             </h4>
-            <ul className="space-y-3 text-sm text-smoke">
+            <ul className="space-y-3 text-sm text-muted">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5">✉</span>
-                <a href="mailto:contacto@alshadan.com" className="hover:text-gold transition-colors">
+                <a href="mailto:contacto@alshadan.com" className="hover:text-accent transition-colors">
                   contacto@alshadan.com
                 </a>
               </li>
@@ -95,7 +94,7 @@ export function Footer() {
 
           {/* Col 4: Contact form */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold tracking-widest uppercase text-ivory">
+            <h4 className="text-xs font-semibold tracking-widest uppercase text-ink">
               Escribenos
             </h4>
             <ContactForm />

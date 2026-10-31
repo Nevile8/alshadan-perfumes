@@ -16,8 +16,8 @@ const STEPS: { status: string; label: string; icon: string }[] = [
 
 const STATUS_ORDER = ['pending', 'paid', 'shipped', 'delivered']
 
-const inputClass = `w-full px-4 py-3 text-sm bg-onyx-card border border-line rounded-xl
-                    text-ivory placeholder-smoke focus:outline-none focus:border-gold
+const inputClass = `w-full px-4 py-3 text-sm bg-surface border border-line rounded-xl
+                    text-ink placeholder-muted focus:outline-none focus:border-accent
                     transition-colors`
 
 export function TrackOrderClient() {
@@ -49,9 +49,9 @@ export function TrackOrderClient() {
   return (
     <div className="space-y-6">
       {/* Search Form */}
-      <form onSubmit={handleLookup} className="bg-onyx-card border border-line rounded-2xl p-6 space-y-4">
+      <form onSubmit={handleLookup} className="bg-surface border border-line rounded-2xl p-6 space-y-4">
         <div>
-          <label className="block text-xs text-smoke uppercase tracking-wider mb-2">
+          <label className="block text-xs text-muted uppercase tracking-wider mb-2">
             Número de Orden
           </label>
           <input
@@ -65,7 +65,7 @@ export function TrackOrderClient() {
           />
         </div>
         <div>
-          <label className="block text-xs text-smoke uppercase tracking-wider mb-2">
+          <label className="block text-xs text-muted uppercase tracking-wider mb-2">
             Correo Electrónico
           </label>
           <input
@@ -79,15 +79,15 @@ export function TrackOrderClient() {
           />
         </div>
         {error && (
-          <p className="text-red-500 text-sm py-2 px-3 bg-red-950/40 border border-red-800/60 rounded-xl">
+          <p className="text-red-500 text-sm py-2 px-3 bg-red-50 border border-red-200 rounded-xl">
             {error}
           </p>
         )}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3.5 bg-gold text-onyx text-sm font-medium tracking-widest
-                     uppercase rounded-xl hover:bg-gold-deep transition-colors disabled:opacity-50"
+          className="w-full py-3.5 bg-accent text-page text-sm font-medium tracking-widest
+                     uppercase rounded-xl hover:bg-accent-deep transition-colors disabled:opacity-50"
         >
           {loading ? 'Buscando...' : 'Rastrear Pedido'}
         </button>
@@ -97,12 +97,12 @@ export function TrackOrderClient() {
       {order && (
         <div className="space-y-5">
           {/* Status Timeline */}
-          <div className="bg-onyx-card border border-line rounded-2xl p-6">
+          <div className="bg-surface border border-line rounded-2xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-semibold text-ivory uppercase tracking-wider">
+              <h2 className="text-sm font-semibold text-ink uppercase tracking-wider">
                 Estado del Pedido
               </h2>
-              <span className="text-xs font-mono text-smoke">
+              <span className="text-xs font-mono text-muted">
                 #{order.id.slice(0, 8).toUpperCase()}
               </span>
             </div>
@@ -123,21 +123,21 @@ export function TrackOrderClient() {
                       {/* Connector + circle row */}
                       <div className="flex items-center w-full">
                         {/* Left connector */}
-                        <div className={`flex-1 h-0.5 ${idx === 0 ? 'invisible' : isCompleted ? 'bg-gold' : 'bg-line'}`} />
+                        <div className={`flex-1 h-0.5 ${idx === 0 ? 'invisible' : isCompleted ? 'bg-accent' : 'bg-line'}`} />
                         {/* Circle */}
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-xs font-bold transition-all
-                          ${isCurrent  ? 'border-gold bg-gold text-onyx shadow-md' :
-                            isCompleted ? 'border-gold bg-gold/10 text-gold' :
-                                          'border-line bg-onyx-card text-line-strong'}`}>
+                          ${isCurrent  ? 'border-accent bg-accent text-page shadow-md' :
+                            isCompleted ? 'border-accent bg-accent/10 text-accent' :
+                                          'border-line bg-surface text-line-strong'}`}>
                           {step.icon}
                         </div>
                         {/* Right connector */}
-                        <div className={`flex-1 h-0.5 ${isLast ? 'invisible' : isCompleted && idx < currentStepIndex ? 'bg-gold' : 'bg-line'}`} />
+                        <div className={`flex-1 h-0.5 ${isLast ? 'invisible' : isCompleted && idx < currentStepIndex ? 'bg-accent' : 'bg-line'}`} />
                       </div>
                       {/* Label */}
                       <p className={`text-xs mt-2 text-center font-medium ${
-                        isCurrent  ? 'text-gold' :
-                        isCompleted ? 'text-smoke' : 'text-line-strong'
+                        isCurrent  ? 'text-accent' :
+                        isCompleted ? 'text-muted' : 'text-line-strong'
                       }`}>
                         {step.label}
                       </p>
@@ -150,22 +150,22 @@ export function TrackOrderClient() {
 
           {/* Tracking info — only if shipped */}
           {order.status === 'shipped' && order.tracking_number && (
-            <div className="bg-onyx-raised border border-line rounded-2xl p-5 space-y-3">
-              <h3 className="text-xs font-semibold text-ivory uppercase tracking-wider">
+            <div className="bg-surface-2 border border-line rounded-2xl p-5 space-y-3">
+              <h3 className="text-xs font-semibold text-ink uppercase tracking-wider">
                 Información de Envío
               </h3>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-smoke uppercase tracking-wider mb-1">Número de Tracking</p>
-                  <p className="font-mono font-semibold text-ivory">{order.tracking_number}</p>
+                  <p className="text-xs text-muted uppercase tracking-wider mb-1">Número de Tracking</p>
+                  <p className="font-mono font-semibold text-ink">{order.tracking_number}</p>
                 </div>
                 {safeHttpUrl(order.tracking_url) && (
                   <a
                     href={safeHttpUrl(order.tracking_url) ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 bg-gold text-onyx text-xs font-medium tracking-widest
-                               uppercase rounded-full hover:bg-gold-deep transition-colors flex-shrink-0"
+                    className="px-4 py-2 bg-accent text-page text-xs font-medium tracking-widest
+                               uppercase rounded-full hover:bg-accent-deep transition-colors flex-shrink-0"
                   >
                     Rastrear →
                   </a>
@@ -178,36 +178,36 @@ export function TrackOrderClient() {
           {(() => {
             const addr = order.shipping_address as ShippingAddress
             return (
-              <div className="bg-onyx-card border border-line rounded-2xl p-5">
-                <h3 className="text-xs font-semibold text-ivory uppercase tracking-wider mb-3">
+              <div className="bg-surface border border-line rounded-2xl p-5">
+                <h3 className="text-xs font-semibold text-ink uppercase tracking-wider mb-3">
                   Dirección de Entrega
                 </h3>
-                <p className="text-sm text-ivory font-medium">{addr.full_name}</p>
-                <p className="text-sm text-smoke">{addr.address}</p>
-                <p className="text-sm text-smoke">{addr.commune}, {addr.region}</p>
+                <p className="text-sm text-ink font-medium">{addr.full_name}</p>
+                <p className="text-sm text-muted">{addr.address}</p>
+                <p className="text-sm text-muted">{addr.commune}, {addr.region}</p>
               </div>
             )
           })()}
 
           {/* Items summary */}
-          <div className="bg-onyx-card border border-line rounded-2xl p-5">
-            <h3 className="text-xs font-semibold text-ivory uppercase tracking-wider mb-4">
+          <div className="bg-surface border border-line rounded-2xl p-5">
+            <h3 className="text-xs font-semibold text-ink uppercase tracking-wider mb-4">
               Resumen del Pedido
             </h3>
             <div className="space-y-3">
               {order.order_items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm">
                   <div>
-                    <p className="text-ivory font-medium">{item.product_name}</p>
-                    <p className="text-smoke text-xs">{item.size_ml} ml × {item.quantity}</p>
+                    <p className="text-ink font-medium">{item.product_name}</p>
+                    <p className="text-muted text-xs">{item.size_ml} ml × {item.quantity}</p>
                   </div>
-                  <p className="text-gold font-semibold">
+                  <p className="text-accent font-semibold">
                     {formatPrice(item.unit_price * item.quantity)}
                   </p>
                 </div>
               ))}
             </div>
-            <div className="border-t border-line mt-4 pt-4 flex justify-between font-semibold text-ivory text-sm">
+            <div className="border-t border-line mt-4 pt-4 flex justify-between font-semibold text-ink text-sm">
               <span>Total</span>
               <span>{formatPrice(order.total)}</span>
             </div>

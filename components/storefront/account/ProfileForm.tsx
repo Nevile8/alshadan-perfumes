@@ -4,9 +4,9 @@ import { useActionState } from 'react'
 import { updateProfile, type FormState } from '@/app/(storefront)/account/actions'
 import { LIMITS } from '@/lib/limits'
 
-const inputClass = `w-full px-4 py-2.5 text-sm bg-onyx-card border border-line rounded-lg
-                    text-ivory placeholder-smoke focus:outline-none focus:border-gold transition-colors`
-const labelClass = 'block text-xs text-smoke uppercase tracking-wider mb-2'
+const inputClass = `w-full px-4 py-2.5 text-sm bg-surface border border-line rounded-lg
+                    text-ink placeholder-muted focus:outline-none focus:border-accent transition-colors`
+const labelClass = 'block text-xs text-muted uppercase tracking-wider mb-2'
 
 export function ProfileForm({ email, fullName, phone }: { email: string; fullName: string; phone: string }) {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(updateProfile, null)
@@ -28,12 +28,12 @@ export function ProfileForm({ email, fullName, phone }: { email: string; fullNam
                autoComplete="tel" placeholder="+56 9 1234 5678" className={inputClass} />
       </div>
       {state?.error && <p className="text-red-500 text-xs">{state.error}</p>}
-      {state?.success && <p className="text-green-300 text-xs">Datos guardados.</p>}
+      {state?.success && <p className="text-green-700 text-xs">Datos guardados.</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="px-6 py-2.5 bg-gold text-onyx text-xs font-medium tracking-widest uppercase
-                   rounded-lg hover:bg-gold-deep transition-colors disabled:opacity-50"
+        className="px-6 py-2.5 bg-accent text-page text-xs font-medium tracking-widest uppercase
+                   rounded-lg hover:bg-accent-deep transition-colors disabled:opacity-50"
       >
         {isPending ? 'Guardando...' : 'Guardar'}
       </button>
