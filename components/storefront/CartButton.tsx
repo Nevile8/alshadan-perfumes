@@ -21,7 +21,7 @@ export function CartButton() {
     <button
       type="button"
       onClick={openDrawer}
-      className="relative p-2 text-ink/80 hover:text-accent-deep transition-colors"
+      className="relative p-2 text-page/80 hover:text-sage transition-colors"
       aria-label={`Carrito${count > 0 ? ` — ${count} productos` : ''}`}
     >
       <svg
