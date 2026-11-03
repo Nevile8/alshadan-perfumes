@@ -1,8 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { DeleteButton } from '@/components/admin/DeleteButton'
-import { StockEditor } from '@/components/admin/StockEditor'
+import { ProductsTable, type ProductRow } from '@/components/admin/ProductsTable'
 import { profitMargin } from '@/lib/utils'
 import type { Product, ProductVariant, ProductVariantCost } from '@/lib/types/database'
 
@@ -33,11 +31,28 @@ export default async function AdminProductsPage() {
     return min === max ? `${min}%` : `${min}% – ${max}%`
   }
 
-  const genderLabel: Record<string, string> = {
-    hombre: 'Hombre',
-    mujer: 'Mujer',
-    unisex: 'Unisex',
+  /** Lowest margin across variants with a cost, for sorting. */
+  function minMargin(variants: ProductVariant[]): number | null {
+    const margins = variants
+      .map((v) => profitMargin(Number(v.price), costByVariant.get(v.id)))
+      .filter((m): m is number => m != null)
+    return margins.length ? Math.min(...margins) : null
   }
+
+  // Only what the table shows goes to the browser (costs stay on the server)
+  const tableRows: ProductRow[] = rows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    brand: p.brand,
+    gender: p.gender,
+    imageUrl: p.image_url,
+    isActive: p.is_active,
+    variants: [...p.product_variants]
+      .sort((a, b) => a.size_ml - b.size_ml)
+      .map((v) => ({ id: v.id, sizeMl: v.size_ml, price: Number(v.price), stock: v.stock })),
+    marginLabel: marginLabel(p.product_variants),
+    minMargin: minMargin(p.product_variants),
+  }))
 
   return (
     <div>
@@ -66,97 +81,7 @@ export default async function AdminProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-800">
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Imagen</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Nombre</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Marca</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Género</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Inventario</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Margen</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Estado</th>
-                <th className="text-right px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((product, i) => (
-                <tr
-                  key={product.id}
-                  className={`border-b border-neutral-800/50 hover:bg-neutral-800/30 transition-colors ${
-                    i === rows.length - 1 ? 'border-b-0' : ''
-                  }`}
-                >
-                  <td className="px-4 py-3">
-                    {product.image_url ? (
-                      <div className="w-10 h-10 rounded overflow-hidden bg-neutral-800 relative">
-                        <Image
-                          src={product.image_url}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          sizes="40px"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 rounded bg-neutral-800 flex items-center justify-center text-neutral-600 text-xs">
-                        —
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-white font-light">{product.name}</span>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400">{product.brand}</td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs px-2 py-0.5 rounded-full border border-neutral-700 text-neutral-400">
-                      {genderLabel[product.gender]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {product.product_variants.length === 0 ? (
-                      <span className="text-neutral-600 text-xs">Sin variantes</span>
-                    ) : (
-                      <div className="flex flex-col gap-1.5">
-                        {[...product.product_variants]
-                          .sort((a, b) => a.size_ml - b.size_ml)
-                          .map((v) => (
-                            <StockEditor key={v.id} variantId={v.id} sizeMl={v.size_ml} stock={v.stock} />
-                          ))}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400 tabular-nums">
-                    {marginLabel(product.product_variants) ?? <span className="text-neutral-600">Sin costo</span>}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        product.is_active
-                          ? 'bg-green-950/50 text-green-400 border border-green-900/50'
-                          : 'bg-neutral-800 text-neutral-500 border border-neutral-700'
-                      }`}
-                    >
-                      {product.is_active ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <Link
-                        href={`/admin/products/${product.id}/edit`}
-                        className="text-xs text-neutral-400 hover:text-white transition-colors"
-                      >
-                        Editar
-                      </Link>
-                      <DeleteButton productId={product.id} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProductsTable rows={tableRows} />
       )}
     </div>
   )
