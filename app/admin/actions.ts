@@ -359,3 +359,47 @@ export async function deleteProduct(
   revalidatePath('/admin/products')
   return { error: null }
 }
+// ─── Inventory ────────────────────────────────────────────────────────────────
+
+/**
+ * Quick stock edit from the products list. `expectedStock` is the value the
+ * admin was looking at: if an order changed it meanwhile, nothing is written
+ * and the current value is returned so the admin can decide again.
+ */
+export async function updateVariantStock(
+  variantId: string,
+  stock: number,
+  expectedStock: number
+): Promise<{ error: string | null; stock: number | null }> {
+  await requireAdmin()
+  if (typeof variantId !== 'string' || !UUID_RE.test(variantId)) return { error: 'Variante no válida.', stock: null }
+  if (!isIntInRange(stock, 0, 100_000) || !isIntInRange(expectedStock, 0, 100_000))
+    return { error: 'El stock debe ser un número entero entre 0 y 100.000.', stock: null }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = createAdminClient() as any
+
+  const { data: updated, error } = await supabase
+    .from('product_variants')
+    .update({ stock })
+    .eq('id', variantId)
+    .eq('stock', expectedStock)
+    .select('stock')
+    .maybeSingle()
+  if (error) {
+    console.error('[Admin] Stock update failed', error)
+    return { error: 'No se pudo guardar el stock.', stock: null }
+  }
+
+  if (!updated) {
+    const { data: current } = await supabase.from('product_variants').select('stock').eq('id', variantId).maybeSingle()
+    if (!current) return { error: 'La variante ya no existe.', stock: null }
+    revalidatePath('/admin/products')
+    return {
+      error: `El stock cambió a ${current.stock} mientras editabas (probablemente por una venta). Revisa y vuelve a guardar.`,
+      stock: current.stock,
+    }
+  }
+
+  revalidatePath('/admin/products')
+  return { error: null, stock: updated.stock }
+}

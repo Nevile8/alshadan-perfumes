@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { DeleteButton } from '@/components/admin/DeleteButton'
+import { StockEditor } from '@/components/admin/StockEditor'
 import { profitMargin } from '@/lib/utils'
 import type { Product, ProductVariant, ProductVariantCost } from '@/lib/types/database'
 
@@ -65,7 +66,7 @@ export default async function AdminProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-neutral-800">
@@ -73,7 +74,7 @@ export default async function AdminProductsPage() {
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Nombre</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Marca</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Género</th>
-                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Variantes</th>
+                <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Inventario</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Margen</th>
                 <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Estado</th>
                 <th className="text-right px-4 py-3 text-neutral-500 text-xs tracking-wider uppercase font-normal">Acciones</th>
@@ -113,8 +114,18 @@ export default async function AdminProductsPage() {
                       {genderLabel[product.gender]}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-neutral-400">
-                    {product.product_variants.length} variante{product.product_variants.length !== 1 ? 's' : ''}
+                  <td className="px-4 py-3">
+                    {product.product_variants.length === 0 ? (
+                      <span className="text-neutral-600 text-xs">Sin variantes</span>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {[...product.product_variants]
+                          .sort((a, b) => a.size_ml - b.size_ml)
+                          .map((v) => (
+                            <StockEditor key={v.id} variantId={v.id} sizeMl={v.size_ml} stock={v.stock} />
+                          ))}
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-neutral-400 tabular-nums">
                     {marginLabel(product.product_variants) ?? <span className="text-neutral-600">Sin costo</span>}
