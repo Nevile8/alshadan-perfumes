@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/require-admin'
+import { sendTestEmail } from '@/lib/email'
 import { LIMITS, UUID_RE, cleanString } from '@/lib/limits'
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -402,4 +403,22 @@ export async function updateVariantStock(
 
   revalidatePath('/admin/products')
   return { error: null, stock: updated.stock }
+}
+
+// ─── Email check ──────────────────────────────────────────────────────────────
+
+export async function sendTestEmailAction(
+  to: string
+): Promise<{ ok: boolean; message: string }> {
+  await requireAdmin()
+
+  const address = to.trim().slice(0, LIMITS.email)
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+    return { ok: false, message: 'Ingresa un correo válido.' }
+  }
+
+  const result = await sendTestEmail(address)
+  return result.ok
+    ? { ok: true, message: `Resend aceptó el correo${result.id ? ` (id ${result.id})` : ''}. Revisa la bandeja de ${address}, incluida la carpeta de spam.` }
+    : { ok: false, message: result.error }
 }
