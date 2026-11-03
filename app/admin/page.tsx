@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { emailConfig } from '@/lib/email'
+import { EmailTestForm } from '@/components/admin/EmailTestForm'
 import {
   ORDER_STATUSES,
   ORDER_STATUS_CARD,
@@ -19,6 +21,8 @@ export default async function AdminDashboardPage() {
         supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', status)
       ),
     ])
+
+  const email = emailConfig()
 
   const byStatus = ORDER_STATUSES.map((status, i) => ({ status, count: statusCounts[i].count ?? 0 }))
 
@@ -91,6 +95,37 @@ export default async function AdminDashboardPage() {
             Cargar datos de prueba →
           </Link>
         </div>
+      </div>
+
+      {/* Email check */}
+      <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 mt-8">
+        <h3 className="text-neutral-400 text-xs tracking-wider uppercase mb-4">Correos (Resend)</h3>
+        <dl className="grid grid-cols-1 sm:grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm mb-6">
+          <dt className="text-neutral-500">Clave API</dt>
+          <dd className={email.hasApiKey ? 'text-green-400' : 'text-red-400'}>
+            {email.hasApiKey ? 'Configurada' : 'Falta RESEND_API_KEY: no se envía ningún correo'}
+          </dd>
+          <dt className="text-neutral-500">Remitente</dt>
+          <dd className="text-neutral-200 break-all">
+            {email.from}
+            {email.fromIsDefault && <span className="text-neutral-500"> (valor por defecto, EMAIL_FROM no definida)</span>}
+          </dd>
+          <dt className="text-neutral-500">Avisos de la tienda a</dt>
+          <dd className="text-neutral-200 break-all">
+            {email.admin}
+            {email.adminIsDefault && <span className="text-neutral-500"> (valor por defecto, EMAIL_ADMIN no definida)</span>}
+          </dd>
+          <dt className="text-neutral-500">Enlaces apuntan a</dt>
+          <dd className="text-neutral-200 break-all">
+            {email.appUrl}
+            {email.appUrlIsDefault && <span className="text-neutral-500"> (valor por defecto, NEXT_PUBLIC_APP_URL no definida)</span>}
+          </dd>
+        </dl>
+        <p className="text-neutral-500 text-xs mb-4">
+          Envía una confirmación de pedido de ejemplo. Si Resend la rechaza, aquí verás el motivo exacto
+          (por ejemplo, dominio del remitente no verificado).
+        </p>
+        <EmailTestForm defaultTo={email.admin} />
       </div>
     </div>
   )

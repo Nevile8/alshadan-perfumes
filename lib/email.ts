@@ -27,11 +27,14 @@ type SendArgs = {
   replyTo?: string
 }
 
-export async function sendEmail({ to, subject, html, replyTo }: SendArgs): Promise<boolean> {
+export type SendResult = { ok: true; id: string | null } | { ok: false; error: string }
+
+/** Sends one email and reports exactly what Resend answered (used by the admin test tool). */
+export async function deliverEmail({ to, subject, html, replyTo }: SendArgs): Promise<SendResult> {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
     console.warn('[Email] RESEND_API_KEY not set — email not sent:', subject)
-    return false
+    return { ok: false, error: 'RESEND_API_KEY no está configurada en el servidor.' }
   }
 
   try {
@@ -42,7 +45,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendArgs): Promi
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from:     process.env.EMAIL_FROM || DEFAULT_FROM,
+        from:     emailFrom(),
         to:       Array.isArray(to) ? to : [to],
         subject,
         html,
@@ -50,14 +53,40 @@ export async function sendEmail({ to, subject, html, replyTo }: SendArgs): Promi
       }),
       cache: 'no-store',
     })
+    const text = await res.text().catch(() => '')
     if (!res.ok) {
-      console.error('[Email] Resend error', res.status, await res.text().catch(() => ''))
-      return false
+      console.error('[Email] Resend error', res.status, text)
+      let message = text
+      try { message = JSON.parse(text).message ?? text } catch {}
+      return { ok: false, error: `Resend respondió ${res.status}: ${message || 'sin detalle'}` }
     }
-    return true
+    let id: string | null = null
+    try { id = JSON.parse(text).id ?? null } catch {}
+    return { ok: true, id }
   } catch (err) {
     console.error('[Email] Send failed', err)
-    return false
+    return { ok: false, error: `No se pudo contactar a Resend: ${err instanceof Error ? err.message : String(err)}` }
+  }
+}
+
+export async function sendEmail(args: SendArgs): Promise<boolean> {
+  return (await deliverEmail(args)).ok
+}
+
+export function emailFrom(): string {
+  return process.env.EMAIL_FROM || DEFAULT_FROM
+}
+
+/** What the server is configured with, for the admin email check (never exposes the key). */
+export function emailConfig() {
+  return {
+    hasApiKey:   Boolean(process.env.RESEND_API_KEY),
+    from:        emailFrom(),
+    fromIsDefault: !process.env.EMAIL_FROM,
+    admin:       adminEmail(),
+    adminIsDefault: !process.env.EMAIL_ADMIN,
+    appUrl:      appUrl(),
+    appUrlIsDefault: !process.env.NEXT_PUBLIC_APP_URL,
   }
 }
 
@@ -169,10 +198,9 @@ function addressBlock(addr: ShippingAddress): string {
 // ─── Order emails ─────────────────────────────────────────────────────────────
 
 /** Customer confirmation + owner alert, sent once when an order becomes paid. */
-export async function sendOrderPaidEmails(order: OrderWithItems): Promise<void> {
+function orderPaidCustomerHtml(order: OrderWithItems): string {
   const addr = order.shipping_address as ShippingAddress
-
-  const customerHtml = layout('¡Gracias por tu compra!', `
+  return layout('¡Gracias por tu compra!', `
     <p>Hola ${esc(addr.full_name)},</p>
     <p>Recibimos el pago de tu pedido <strong>#${esc(shortId(order))}</strong>. Te avisaremos por correo cuando sea despachado.</p>
     ${orderSummary(order)}
@@ -180,6 +208,11 @@ export async function sendOrderPaidEmails(order: OrderWithItems): Promise<void> 
     ${button(trackUrl(order), 'Seguir mi pedido')}
     <p style="font-size:12px;color:#7A6E65;text-align:center">Número de orden completo: ${esc(order.id)}</p>
   `)
+}
+
+export async function sendOrderPaidEmails(order: OrderWithItems): Promise<void> {
+  const addr = order.shipping_address as ShippingAddress
+  const customerHtml = orderPaidCustomerHtml(order)
 
   const adminHtml = layout(`Nueva orden #${shortId(order)}`, `
     <p><strong>${esc(addr.full_name)}</strong> · ${esc(addr.email)} · ${esc(addr.phone)}</p>
@@ -275,5 +308,58 @@ export async function sendContactMessage(name: string, email: string, message: s
     subject: `Mensaje de ${name.replace(/[\r\n]+/g, ' ').slice(0, 60)} · alshadan.com`,
     html,
     replyTo: email,
+  })
+}
+
+// ─── Admin test ───────────────────────────────────────────────────────────────
+
+/**
+ * Sends a sample order confirmation (fake order, real template) so the owner can
+ * check delivery, the sender address and how the email looks in their inbox.
+ */
+export async function sendTestEmail(to: string): Promise<SendResult> {
+  const now = new Date().toISOString()
+  const id = '00000000-0000-4000-8000-000000000000'
+  const sample: OrderWithItems = {
+    id,
+    user_id: null,
+    status: 'paid',
+    subtotal: 89990,
+    discount: 0,
+    shipping_cost: 4990,
+    total: 94980,
+    coupon_code: null,
+    shipping_address: {
+      full_name: 'Cliente de prueba',
+      rut: '11.111.111-1',
+      email: to,
+      phone: '+56 9 0000 0000',
+      address: 'Av. Ejemplo 123',
+      commune: 'Providencia',
+      region: 'Región Metropolitana',
+      country: 'Chile',
+    },
+    payment_provider: 'mercadopago',
+    payment_reference: null,
+    tracking_number: null,
+    tracking_url: null,
+    created_at: now,
+    updated_at: now,
+    order_items: [{
+      id, order_id: id, variant_id: id,
+      product_name: 'Perfume de muestra', size_ml: 100, quantity: 1, unit_price: 89990, created_at: now,
+    }],
+  }
+
+  const html = orderPaidCustomerHtml(sample).replace(
+    '<td style="padding:20px 32px 28px;font-size:14px;line-height:1.6">',
+    '<td style="padding:20px 32px 28px;font-size:14px;line-height:1.6"><p style="background:#FFF4E5;border:1px solid #F5C99B;border-radius:8px;padding:10px 12px;font-size:12px">Correo de prueba enviado desde el panel de administración. Este pedido no existe.</p>'
+  )
+
+  return deliverEmail({
+    to,
+    subject: '[Prueba] Confirmación de pedido · ALSHADAN',
+    html,
+    replyTo: adminEmail(),
   })
 }
