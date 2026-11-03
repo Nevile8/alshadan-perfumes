@@ -417,8 +417,18 @@ export async function sendTestEmailAction(
     return { ok: false, message: 'Ingresa un correo válido.' }
   }
 
-  const result = await sendTestEmail(address)
-  return result.ok
-    ? { ok: true, message: `Resend aceptó el correo${result.id ? ` (id ${result.id})` : ''}. Revisa la bandeja de ${address}, incluida la carpeta de spam.` }
-    : { ok: false, message: result.error }
+  const { customer, store, storeTo } = await sendTestEmail(address)
+  const line = (label: string, to: string, r: typeof customer) =>
+    r.ok
+      ? `${label} (${to}): Resend lo aceptó${r.id ? `, id ${r.id}` : ''}.`
+      : `${label} (${to}): falló. ${r.error}`
+
+  return {
+    ok: customer.ok && store.ok,
+    message: [
+      line('Confirmación al cliente', address, customer),
+      line('Aviso a la tienda', storeTo, store),
+      customer.ok || store.ok ? 'Revisa ambas bandejas, incluida la carpeta de spam.' : '',
+    ].filter(Boolean).join('\n'),
+  }
 }

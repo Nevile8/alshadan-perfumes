@@ -122,7 +122,7 @@ export default async function AdminDashboardPage() {
           </dd>
         </dl>
         <p className="text-neutral-500 text-xs mb-4">
-          Envía una confirmación de pedido de ejemplo. Si Resend la rechaza, aquí verás el motivo exacto
+          Envía los dos correos de una compra de ejemplo: la confirmación al correo que indiques y el aviso de nueva orden a la tienda. Si Resend la rechaza, aquí verás el motivo exacto
           (por ejemplo, dominio del remitente no verificado).
         </p>
         <EmailTestForm defaultTo={email.admin} />

@@ -210,16 +210,21 @@ function orderPaidCustomerHtml(order: OrderWithItems): string {
   `)
 }
 
-export async function sendOrderPaidEmails(order: OrderWithItems): Promise<void> {
+function orderPaidAdminHtml(order: OrderWithItems): string {
   const addr = order.shipping_address as ShippingAddress
-  const customerHtml = orderPaidCustomerHtml(order)
-
-  const adminHtml = layout(`Nueva orden #${shortId(order)}`, `
+  return layout(`Nueva orden #${shortId(order)}`, `
     <p><strong>${esc(addr.full_name)}</strong> · ${esc(addr.email)} · ${esc(addr.phone)}</p>
     ${orderSummary(order)}
     ${addressBlock(addr)}
     ${button(`${appUrl()}/admin/orders/${order.id}`, 'Ver en el panel')}
   `)
+}
+
+export async function sendOrderPaidEmails(order: OrderWithItems): Promise<void> {
+  const addr = order.shipping_address as ShippingAddress
+  const customerHtml = orderPaidCustomerHtml(order)
+  const adminHtml    = orderPaidAdminHtml(order)
+
 
   await Promise.all([
     sendEmail({
@@ -317,7 +322,9 @@ export async function sendContactMessage(name: string, email: string, message: s
  * Sends a sample order confirmation (fake order, real template) so the owner can
  * check delivery, the sender address and how the email looks in their inbox.
  */
-export async function sendTestEmail(to: string): Promise<SendResult> {
+export async function sendTestEmail(
+  to: string
+): Promise<{ customer: SendResult; store: SendResult; storeTo: string }> {
   const now = new Date().toISOString()
   const id = '00000000-0000-4000-8000-000000000000'
   const sample: OrderWithItems = {
@@ -351,15 +358,27 @@ export async function sendTestEmail(to: string): Promise<SendResult> {
     }],
   }
 
-  const html = orderPaidCustomerHtml(sample).replace(
-    '<td style="padding:20px 32px 28px;font-size:14px;line-height:1.6">',
-    '<td style="padding:20px 32px 28px;font-size:14px;line-height:1.6"><p style="background:#FFF4E5;border:1px solid #F5C99B;border-radius:8px;padding:10px 12px;font-size:12px">Correo de prueba enviado desde el panel de administración. Este pedido no existe.</p>'
+  const bodyCell = '<td style="padding:20px 32px 28px;font-size:14px;line-height:1.6">'
+  const markTest = (html: string) => html.replace(
+    bodyCell,
+    `${bodyCell}<p style="background:#FFF4E5;border:1px solid #F5C99B;border-radius:8px;padding:10px 12px;font-size:12px">Correo de prueba enviado desde el panel de administración. Este pedido no existe.</p>`
   )
 
-  return deliverEmail({
-    to,
-    subject: '[Prueba] Confirmación de pedido · ALSHADAN',
-    html,
-    replyTo: adminEmail(),
-  })
+  // Same pair of emails a real paid order sends: customer confirmation + store alert
+  const storeTo = adminEmail()
+  const [customer, store] = await Promise.all([
+    deliverEmail({
+      to,
+      subject: '[Prueba] Confirmación de pedido · ALSHADAN',
+      html:    markTest(orderPaidCustomerHtml(sample)),
+      replyTo: storeTo,
+    }),
+    deliverEmail({
+      to:      storeTo,
+      subject: '[Prueba] Nueva orden · ALSHADAN',
+      html:    markTest(orderPaidAdminHtml(sample)),
+      replyTo: to,
+    }),
+  ])
+  return { customer, store, storeTo }
 }

@@ -47,7 +47,7 @@ export function EmailTestForm({ defaultTo }: { defaultTo: string }) {
         </button>
       </div>
       {result && (
-        <p role="status" className={`text-sm break-words ${result.ok ? 'text-green-400' : 'text-red-400'}`}>
+        <p role="status" className={`text-sm break-words whitespace-pre-line ${result.ok ? 'text-green-400' : 'text-red-400'}`}>
           {result.message}
         </p>
       )}
